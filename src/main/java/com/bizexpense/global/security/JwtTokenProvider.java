@@ -6,6 +6,9 @@ import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
+import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.Date;
 import java.util.Optional;
 import javax.crypto.SecretKey;
@@ -26,8 +29,32 @@ public class JwtTokenProvider {
 
     public JwtTokenProvider(@Value("${jwt.secret}") String secret,
                             @Value("${jwt.access-token-validity}") long validityMillis) {
-        this.key = Keys.hmacShaKeyFor(Decoders.BASE64.decode(secret));
+        this.key = signingKey(secret);
         this.validityMillis = validityMillis;
+    }
+
+    /**
+     * Base64 로 인코딩된 256bit 이상 키면 그대로 쓰고, 아니면(배포 환경이 생성한 임의 문자열 등)
+     * SHA-256 으로 256bit 키를 만든다. 어떤 형식의 비밀값이 주어져도 서버가 뜨도록 하기 위함.
+     */
+    private static SecretKey signingKey(String secret) {
+        if (secret == null || secret.isBlank()) {
+            throw new IllegalStateException("jwt.secret 이 설정되지 않았습니다. (JWT_SECRET 환경변수)");
+        }
+        try {
+            byte[] decoded = Decoders.BASE64.decode(secret);
+            if (decoded.length >= 32) {
+                return Keys.hmacShaKeyFor(decoded);
+            }
+        } catch (RuntimeException ignored) {
+            // Base64 가 아니면 아래에서 해시로 키를 만든다
+        }
+        try {
+            byte[] hashed = MessageDigest.getInstance("SHA-256").digest(secret.getBytes(StandardCharsets.UTF_8));
+            return Keys.hmacShaKeyFor(hashed);
+        } catch (NoSuchAlgorithmException e) {
+            throw new IllegalStateException(e);
+        }
     }
 
     public String createToken(LoginUser user) {

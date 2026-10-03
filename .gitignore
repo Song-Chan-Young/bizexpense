@@ -40,3 +40,6 @@ out/
 .data/
 uploads/
 *.log
+
+### Build output copied in Docker ###
+src/main/resources/static/

@@ -24,13 +24,15 @@ npm install
 npm run dev
 ```
 
-로컬 프로필은 `./.data/` 아래 H2 파일 DB를 사용하고, 처음 실행할 때 테스트 계정을 만든다.
+로컬 프로필은 `./.data/` 아래 H2 파일 DB를 사용하고, 처음 실행할 때 데모 계정과 예시 데이터(출장·일정·경비·결재)를 만든다.
+로그인 화면의 체험 계정 버튼으로 바로 로그인할 수 있다.
 
-| 아이디 | 권한 | 부서 | 비밀번호 |
+| 아이디 | 권한 | 부서 | 비밀번호 (로컬) |
 |---|---|---|---|
 | admin | 관리자 | 경영지원팀 | pass1234 |
 | manager1 | 팀장 | 영업1팀 | pass1234 |
 | user1, user2 | 일반 직원 | 영업1팀 | pass1234 |
+| manager2, user3 | 팀장 / 일반 직원 | 영업2팀 | pass1234 |
 
 H2 콘솔: http://localhost:8080/h2-console (JDBC URL `jdbc:h2:file:./.data/bizexpense`)
 
@@ -59,6 +61,37 @@ DRAFT(임시저장) ─신청─▶ REQUESTED(신청) ─승인─▶ APPROVED(�
 - 수정/삭제는 임시저장·반려 상태만 가능하다. 이후 상태는 정산(Phase 8) 흐름이 바꾼다.
 - 결제 수단의 `법인 결제` 여부로 출장별 법인카드 합계와 개인 부담(정산 지급 예정)을 나눈다.
 - 비용 항목/결제 수단은 삭제 대신 사용 중지한다 (기존 경비 보존). 초기 데이터는 모든 환경에서 자동 생성된다.
+
+## 배포 (Render)
+
+React 빌드 결과를 Spring Boot 가 함께 서비스하는 **단일 Docker 이미지**로 배포한다 (`Dockerfile`).
+`render.yaml`(Blueprint) 이 웹 서비스와 PostgreSQL 을 함께 만든다.
+
+1. GitHub 에 저장소를 올린다 (`main` 브랜치).
+2. [Render](https://render.com) → **New → Blueprint** → 저장소 선택 → **Apply**.
+3. 빌드가 끝나면 `https://bizexpense-xxxx.onrender.com` 주소가 생긴다. 이 링크를 공유하면 PC·폰 어디서든 접속할 수 있다.
+
+| 환경변수 | 설명 |
+|---|---|
+| `SPRING_PROFILES_ACTIVE` | `prod,demo` (데모 데이터 + 체험 계정 안내). 실제 운영은 `prod` 만 |
+| `JWT_SECRET` | Render 가 자동 생성 |
+| `DEMO_PASSWORD` | 체험 계정 비밀번호 (기본 `demo1234`) |
+| `DB_HOST` / `DB_PORT` / `DB_NAME` / `DB_USERNAME` / `DB_PASSWORD` | Render PostgreSQL 에서 자동 연결 |
+
+- 데모 데이터는 DB 에 사용자가 없을 때 한 번만, **처음 실행한 날 기준 날짜**로 만들어진다.
+- 무료 플랜은 15분간 요청이 없으면 잠들어 첫 접속에 1분 정도 걸리고, 무료 PostgreSQL 은 30일 후 만료된다.
+  계속 쓰려면 유료 플랜(웹 서비스 Starter, DB Basic)으로 바꾼다.
+
+로컬에서 운영 모드 확인 (PostgreSQL 대신 H2):
+
+```bash
+cd frontend && npm ci && npm run build && cd ..
+cp -R frontend/dist src/main/resources/static
+./gradlew bootJar
+SPRING_PROFILES_ACTIVE=prod,demo PORT=9090 JWT_SECRET=any-secret \
+DB_URL='jdbc:h2:mem:prod;MODE=PostgreSQL;DATABASE_TO_LOWER=TRUE' DB_USERNAME=sa DB_PASSWORD= \
+java -jar build/libs/app.jar
+```
 
 ## 테스트
 
