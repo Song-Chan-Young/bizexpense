@@ -23,6 +23,8 @@ RUN ./gradlew bootJar --no-daemon -x test
 FROM eclipse-temurin:21-jre
 WORKDIR /app
 ENV TZ=Asia/Seoul
+# 기본은 외부 DB 없이 뜨는 데모 모드. PostgreSQL 로 운영하려면 SPRING_PROFILES_ACTIVE=prod(,demo) 로 덮어쓴다.
+ENV SPRING_PROFILES_ACTIVE=demo,standalone
 COPY --from=backend /app/build/libs/app.jar app.jar
 EXPOSE 8080
 # 무료/소형 인스턴스(512MB) 메모리에 맞춰 힙을 컨테이너 메모리 비율로 제한
