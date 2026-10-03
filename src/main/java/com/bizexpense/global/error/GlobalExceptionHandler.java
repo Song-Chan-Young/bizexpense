@@ -17,6 +17,8 @@ import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
+import org.springframework.web.multipart.MaxUploadSizeExceededException;
+import org.springframework.web.multipart.support.MissingServletRequestPartException;
 import org.springframework.web.servlet.resource.NoResourceFoundException;
 
 @Slf4j
@@ -48,6 +50,17 @@ public class GlobalExceptionHandler {
         String name = e instanceof MethodArgumentTypeMismatchException m ? m.getName()
                 : ((MissingServletRequestParameterException) e).getParameterName();
         return toResponse(ErrorCode.INVALID_INPUT, "요청 파라미터가 올바르지 않습니다: " + name);
+    }
+
+    /** 업로드 크기 제한(spring.servlet.multipart.max-file-size) 초과 */
+    @ExceptionHandler(MaxUploadSizeExceededException.class)
+    public ResponseEntity<ApiResponse<Void>> handleMaxUploadSize(MaxUploadSizeExceededException e) {
+        return toResponse(ErrorCode.FILE_TOO_LARGE, ErrorCode.FILE_TOO_LARGE.getMessage());
+    }
+
+    @ExceptionHandler(MissingServletRequestPartException.class)
+    public ResponseEntity<ApiResponse<Void>> handleMissingPart(MissingServletRequestPartException e) {
+        return toResponse(ErrorCode.INVALID_INPUT, "첨부할 파일을 선택하세요.");
     }
 
     /** @ModelAttribute 바인딩 오류 */

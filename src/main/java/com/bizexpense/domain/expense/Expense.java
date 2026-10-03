@@ -77,7 +77,7 @@ public class Expense extends BaseTimeEntity {
     @Column(length = 1000)
     private String description;
 
-    /** 증빙 첨부 여부. 영수증 파일(Phase 6)이 있으면 true */
+    /** 증빙 첨부 여부. 영수증 파일({@link ExpenseFile})이 1개 이상이면 true */
     @Column(name = "proof_yn", nullable = false)
     private boolean proof;
 
@@ -114,7 +114,7 @@ public class Expense extends BaseTimeEntity {
 
     public void update(Trip trip, ExpenseCategory category, PaymentMethod paymentMethod,
                        LocalDate usedAt, String storeName, long amount, String description) {
-        requireEditable("수정");
+        checkEditable("수정");
         validate(trip, usedAt);
         if (!this.trip.getId().equals(trip.getId())) {
             // 다른 출장으로 옮기면 기존 정산과의 연결을 끊고 새 경비처럼 다룬다
@@ -131,7 +131,7 @@ public class Expense extends BaseTimeEntity {
     }
 
     public void checkDeletable() {
-        requireEditable("삭제");
+        checkEditable("삭제");
     }
 
     // ---------- 정산 흐름에 따른 상태 변경 ----------
@@ -183,7 +183,7 @@ public class Expense extends BaseTimeEntity {
         return user.getId().equals(userId);
     }
 
-    private void requireEditable(String action) {
+    public void checkEditable(String action) {
         if (!status.isEditable()) {
             throw new BusinessException(ErrorCode.INVALID_EXPENSE_STATUS,
                     "'" + status.getLabel() + "' 상태의 경비는 " + action + "할 수 없습니다.");

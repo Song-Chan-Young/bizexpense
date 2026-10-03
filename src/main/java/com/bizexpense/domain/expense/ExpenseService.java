@@ -28,6 +28,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class ExpenseService {
 
     private final ExpenseRepository expenseRepository;
+    private final ExpenseFileRepository fileRepository;
     private final TripRepository tripRepository;
     private final UserRepository userRepository;
     private final CodeService codeService;
@@ -101,7 +102,8 @@ public class ExpenseService {
         Expense expense = findDetail(expenseId);
         AccessPolicy.checkOwner(loginUser, expense.getUser());
         expense.checkDeletable();
-        expenseRepository.delete(expense);
+        fileRepository.deleteByExpenseId(expenseId);
+        expenseRepository.deleteById(expenseId);
     }
 
     /** 본인 출장이고, 출장이 시작된 뒤(진행중/완료)여야 경비를 등록할 수 있다. */
