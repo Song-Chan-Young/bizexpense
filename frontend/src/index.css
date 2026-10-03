@@ -1210,3 +1210,68 @@ a.btn {
   font-size: 11px;
   color: var(--muted);
 }
+
+/* ---------- 정산 ---------- */
+.section-note {
+  margin: 0 0 12px;
+}
+.settle-calc {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 8px 24px;
+  margin: 0 0 4px;
+  max-width: 420px;
+  font-variant-numeric: tabular-nums;
+}
+.settle-calc dt {
+  color: var(--muted);
+}
+.settle-calc dd {
+  margin: 0;
+  text-align: right;
+}
+.settle-calc .op {
+  display: inline-block;
+  width: 14px;
+  color: var(--text);
+}
+.settle-calc .result {
+  padding-top: 8px;
+  border-top: 2px solid var(--text);
+  color: var(--text);
+  font-weight: 700;
+  font-size: 16px;
+}
+.settle-calc dd.result {
+  color: var(--primary);
+  font-size: 18px;
+}
+.settle-history {
+  list-style: none;
+  margin: 16px 0 0;
+  padding: 0;
+  border-top: 1px solid var(--border);
+}
+.settle-history-link {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 4px;
+  border-bottom: 1px solid var(--border);
+  color: inherit;
+  text-decoration: none;
+}
+.settle-history-link:hover {
+  background: #f9fafb;
+}
+.settle-history-link strong {
+  margin-left: auto;
+}
+.settle-top {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 16px;
+}
+.settle-top .panel {
+  margin-bottom: 16px;
+}

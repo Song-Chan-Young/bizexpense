@@ -9,6 +9,7 @@ import { formatWon } from '../../utils/format'
 import ScheduleDetailModal from '../schedule/ScheduleDetailModal'
 import ScheduleFormModal from '../schedule/ScheduleFormModal'
 import TripExpenseSection from './TripExpenseSection'
+import TripSettlementSection from './TripSettlementSection'
 
 // 상태 변경 버튼: actions 의 키 → [버튼 문구, 확인 메시지, API action, 위험 여부]
 const ACTIONS = {
@@ -25,6 +26,9 @@ export default function TripDetailPage() {
   const [error, setError] = useState('')
   // { kind: 'action', key } | { kind: 'delete' } | { kind: 'scheduleForm', schedule } | { kind: 'scheduleDetail', schedule }
   const [modal, setModal] = useState(null)
+  // 경비 변경 ↔ 정산 신청이 서로의 영역에 반영되도록 함께 쓰는 키
+  const [moneyKey, setMoneyKey] = useState(0)
+  const bumpMoney = () => setMoneyKey((k) => k + 1)
 
   const load = useCallback(() => {
     let ignore = false
@@ -157,7 +161,12 @@ export default function TripDetailPage() {
         )}
       </section>
 
-      <TripExpenseSection trip={trip} />
+      <TripExpenseSection trip={trip} reloadKey={moneyKey} onChanged={bumpMoney} />
+
+      {(trip.status === 'IN_PROGRESS' || trip.status === 'COMPLETED') && (
+        // 출장 상태가 바뀌면(예: 출장 완료) 정산 가능 여부도 다시 조회한다
+        <TripSettlementSection tripId={trip.tripId} reloadKey={`${moneyKey}-${trip.status}`} onChanged={bumpMoney} />
+      )}
 
       <section className="panel">
         <div className="panel-header">

@@ -10,6 +10,7 @@ import com.bizexpense.domain.department.DepartmentRepository;
 import com.bizexpense.domain.expense.ExpenseService;
 import com.bizexpense.domain.expense.dto.ExpenseRequest;
 import com.bizexpense.domain.schedule.ScheduleService;
+import com.bizexpense.domain.settlement.SettlementService;
 import com.bizexpense.domain.schedule.ScheduleType;
 import com.bizexpense.domain.schedule.dto.ScheduleRequest;
 import com.bizexpense.domain.trip.TripService;
@@ -55,6 +56,7 @@ public class DemoDataInitializer implements ApplicationRunner {
     private final ApprovalService approvalService;
     private final ScheduleService scheduleService;
     private final ExpenseService expenseService;
+    private final SettlementService settlementService;
 
     private final Map<String, LoginUser> users = new HashMap<>();
     private final Map<String, Long> categories = new HashMap<>();
@@ -129,6 +131,21 @@ public class DemoDataInitializer implements ApplicationRunner {
         expense("user2", incheon, "교통비", "개인카드", -10, "주차비", 8_000);
         expense("user2", incheon, "식비", "개인카드", -10, "물류센터 구내식당", 7_500);
         tripService.complete(users.get("user2"), incheon);
+        // 정산 신청 → 팀장 결재함에 정산 결재 대기
+        settlementService.request(users.get("user2"), incheon);
+
+        // 7) 정산까지 끝난 출장 (신청 → 승인 → 관리자 지급 완료)
+        long suwon = trip("user1", "수원 고객 세미나", "신제품 고객 세미나 발표", "수원", -20, -19, 200_000, true);
+        approve("manager1", suwon, null);
+        tripService.start(users.get("user1"), suwon);
+        expense("user1", suwon, "교통비", "법인카드", -20, "수원 왕복 KTX", 16_800);
+        expense("user1", suwon, "숙박비", "개인카드", -20, "수원 비즈니스 호텔", 89_000);
+        expense("user1", suwon, "식비", "현금", -19, "세미나 후 점심", 11_000);
+        tripService.complete(users.get("user1"), suwon);
+        long suwonSettlement = settlementService.request(users.get("user1"), suwon).settlementId();
+        approvalService.approve(users.get("manager1"),
+                pendingApprovalId("manager1", ApprovalTargetType.SETTLEMENT, suwonSettlement), "확인했습니다.");
+        settlementService.complete(users.get("admin"), suwonSettlement);
 
         // 6) 다른 팀 결재 대기 (영업2팀 팀장에게만 보임)
         trip("user3", "울산 공장 미팅", "부품 납품 일정 협의", "울산", 5, 6, 450_000, true);
@@ -169,15 +186,15 @@ public class DemoDataInitializer implements ApplicationRunner {
     }
 
     private void approve(String approver, long tripId, String comment) {
-        approvalService.approve(users.get(approver), pendingApprovalId(approver, tripId), comment);
+        approvalService.approve(users.get(approver), pendingApprovalId(approver, ApprovalTargetType.TRIP, tripId), comment);
     }
 
     private void reject(String approver, long tripId, String comment) {
-        approvalService.reject(users.get(approver), pendingApprovalId(approver, tripId), comment);
+        approvalService.reject(users.get(approver), pendingApprovalId(approver, ApprovalTargetType.TRIP, tripId), comment);
     }
 
-    private long pendingApprovalId(String viewer, long tripId) {
-        return approvalService.history(ApprovalTargetType.TRIP, tripId, users.get(viewer).userId()).stream()
+    private long pendingApprovalId(String viewer, ApprovalTargetType type, long targetId) {
+        return approvalService.history(type, targetId, users.get(viewer).userId()).stream()
                 .filter(a -> a.status() == ApprovalStatus.PENDING)
                 .findFirst()
                 .orElseThrow()
