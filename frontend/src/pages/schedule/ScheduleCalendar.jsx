@@ -8,7 +8,7 @@ import { useCallback, useState } from 'react'
 import { scheduleApi, typeColor } from '../../api/schedules'
 import { toDateParam } from '../../utils/date'
 
-// 폰처럼 좁은 화면에서는 월간 칸이 너무 작으므로 목록 보기로 시작한다
+// 폰처럼 좁은 화면: 월간 달력은 그대로 보여주되, 칸마다 일정 2개까지만 제목으로 표시하고 나머지는 '+n'
 const isNarrow = () => window.matchMedia('(max-width: 640px)').matches
 
 /**
@@ -17,9 +17,9 @@ const isNarrow = () => window.matchMedia('(max-width: 640px)').matches
  * reloadKey 가 바뀌면(등록/수정/삭제 후) 다시 조회한다.
  */
 export default function ScheduleCalendar({ scope, reloadKey, onSelectRange, onEventClick }) {
-  const [initialView] = useState(() => (isNarrow() ? 'listMonth' : 'dayGridMonth'))
+  const [narrow] = useState(isNarrow)
   // 주간 화면은 높이를 고정해야 scrollTime(08:00)부터 보인다. 월간/목록은 내용만큼 늘어난다.
-  const [viewType, setViewType] = useState(initialView)
+  const [viewType, setViewType] = useState('dayGridMonth')
 
   const fetchEvents = useCallback(
     (info, success, failure) => {
@@ -51,16 +51,19 @@ export default function ScheduleCalendar({ scope, reloadKey, onSelectRange, onEv
       <FullCalendar
         plugins={[dayGridPlugin, timeGridPlugin, listPlugin, interactionPlugin]}
         locale={koLocale}
-        initialView={initialView}
+        initialView="dayGridMonth"
         headerToolbar={
-          isNarrow()
-            ? { left: 'prev,next', center: 'title', right: 'listMonth,dayGridMonth' }
+          narrow
+            ? { left: 'prev,next', center: 'title', right: 'dayGridMonth,listMonth' }
             : { left: 'prev,next today', center: 'title', right: 'dayGridMonth,timeGridWeek,listMonth' }
         }
         buttonText={{ listMonth: '목록' }}
+        // 폰에서는 날짜 칸을 누르면 그 날 일정 등록 (길게 누르기 대신)
+        selectLongPressDelay={narrow ? 300 : undefined}
         height={viewType === 'timeGridWeek' ? 680 : 'auto'}
         datesSet={(info) => setViewType(info.view.type)}
-        dayMaxEvents={false}
+        dayMaxEvents={narrow ? 2 : false}
+        moreLinkText={(n) => `+${n}`}
         eventDisplay="block"
         eventContent={renderEvent}
         noEventsContent="이 기간에 일정이 없습니다."
