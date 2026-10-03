@@ -48,6 +48,12 @@ public enum ErrorCode {
     TRIP_NOT_EXPENSABLE(HttpStatus.BAD_REQUEST, "경비를 등록할 수 없는 출장입니다."),
     EXPENSE_DATE_OUT_OF_TRIP(HttpStatus.BAD_REQUEST, "사용일이 출장 기간을 벗어났습니다."),
 
+    // 영수증 파일
+    FILE_NOT_FOUND(HttpStatus.NOT_FOUND, "파일을 찾을 수 없습니다."),
+    INVALID_FILE_TYPE(HttpStatus.BAD_REQUEST, "영수증은 이미지(JPG, PNG, GIF, WEBP) 또는 PDF 파일만 첨부할 수 있습니다."),
+    FILE_TOO_LARGE(HttpStatus.CONTENT_TOO_LARGE, "파일은 5MB 까지 첨부할 수 있습니다."),
+    FILE_COUNT_EXCEEDED(HttpStatus.BAD_REQUEST, "영수증은 경비 1건에 5개까지 첨부할 수 있습니다."),
+
     // 정산
     SETTLEMENT_NOT_FOUND(HttpStatus.NOT_FOUND, "정산을 찾을 수 없습니다."),
     INVALID_SETTLEMENT_STATUS(HttpStatus.CONFLICT, "현재 정산 상태에서는 처리할 수 없습니다."),
