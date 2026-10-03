@@ -13,7 +13,8 @@ public class SpaForwardingController {
 
     @GetMapping({
             "/login", "/schedules", "/expenses", "/approvals", "/admin",
-            "/trips", "/trips/new", "/trips/{id:\\d+}", "/trips/{id:\\d+}/edit"
+            "/trips", "/trips/new", "/trips/{id:\\d+}", "/trips/{id:\\d+}/edit",
+            "/settlements", "/settlements/{id:\\d+}"
     })
     public String forward() {
         return "forward:/index.html";

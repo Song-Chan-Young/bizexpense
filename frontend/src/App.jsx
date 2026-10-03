@@ -8,6 +8,8 @@ import AdminCodePage from './pages/admin/AdminCodePage'
 import ApprovalPage from './pages/approval/ApprovalPage'
 import ExpenseListPage from './pages/expense/ExpenseListPage'
 import SchedulePage from './pages/schedule/SchedulePage'
+import SettlementDetailPage from './pages/settlement/SettlementDetailPage'
+import SettlementListPage from './pages/settlement/SettlementListPage'
 import TripDetailPage from './pages/trip/TripDetailPage'
 import TripFormPage from './pages/trip/TripFormPage'
 import TripListPage from './pages/trip/TripListPage'
@@ -32,6 +34,8 @@ export default function App() {
             <Route path="trips/:id" element={<TripDetailPage />} />
             <Route path="trips/:id/edit" element={<TripFormPage />} />
             <Route path="expenses" element={<ExpenseListPage />} />
+            <Route path="settlements" element={<SettlementListPage />} />
+            <Route path="settlements/:id" element={<SettlementDetailPage />} />
             <Route
               path="admin"
               element={

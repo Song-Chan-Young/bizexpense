@@ -7,7 +7,7 @@ const MENUS = [
   { to: '/schedules', label: '일정', ready: true },
   { to: '/trips', label: '출장', ready: true },
   { to: '/expenses', label: '경비', ready: true },
-  { to: '/settlements', label: '정산', ready: false },
+  { to: '/settlements', label: '정산', ready: true },
   { to: '/approvals', label: '결재', ready: true, roles: ['MANAGER', 'ADMIN'] },
   { to: '/admin', label: '기준 코드', ready: true, roles: ['ADMIN'] },
 ]

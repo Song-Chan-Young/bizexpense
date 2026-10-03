@@ -6,8 +6,11 @@ import ExpenseDetailModal from '../expense/ExpenseDetailModal'
 import ExpenseFormModal from '../expense/ExpenseFormModal'
 import ExpenseTable from '../expense/ExpenseTable'
 
-/** 출장 상세의 경비 영역: 요약(총액/법인/개인 부담/항목별) + 경비 목록 + 등록 */
-export default function TripExpenseSection({ trip }) {
+/**
+ * 출장 상세의 경비 영역: 요약(총액/법인/개인 부담/항목별) + 경비 목록 + 등록.
+ * 바깥 reloadKey(정산 신청 등)가 바뀌어도 다시 조회하고, 경비가 바뀌면 onChanged 로 알린다.
+ */
+export default function TripExpenseSection({ trip, reloadKey: outerKey, onChanged }) {
   const { user } = useAuth()
   const [summary, setSummary] = useState(null)
   const [expenses, setExpenses] = useState([])
@@ -32,12 +35,13 @@ export default function TripExpenseSection({ trip }) {
     return () => {
       ignore = true
     }
-  }, [trip.tripId, scope, reloadKey])
+  }, [trip.tripId, scope, reloadKey, outerKey])
 
   const close = () => setModal(null)
   const reloadAndClose = () => {
     close()
     setReloadKey((k) => k + 1)
+    onChanged?.()
   }
 
   if (!summary) return null

@@ -5,9 +5,10 @@ import Modal from '../../components/Modal'
 import StatusBadge from '../../components/StatusBadge'
 import { formatTimestamp } from '../../utils/date'
 
-// 결재 대상 상세 화면 경로 (정산은 Phase 8 에서 추가)
+// 결재 대상 상세 화면 경로
 const TARGET_PATH = {
   TRIP: (id) => `/trips/${id}`,
+  SETTLEMENT: (id) => `/settlements/${id}`,
 }
 
 /** 결재 상세 + 승인/반려. 반려 시 사유 필수. */
