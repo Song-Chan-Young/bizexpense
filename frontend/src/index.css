@@ -214,7 +214,7 @@ p.muted {
 }
 .cards {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
   gap: 12px;
 }
 .card {
@@ -231,6 +231,179 @@ p.muted {
   margin-top: 8px;
   font-size: 22px;
   font-weight: 700;
+}
+
+.dash-head {
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 4px 10px;
+  margin: 8px 0 12px;
+}
+.dash-head .page-title {
+  margin: 0;
+}
+.card-link {
+  display: block;
+  color: inherit;
+  text-decoration: none;
+  transition: border-color 0.15s;
+}
+.card-link:hover {
+  border-color: var(--primary);
+}
+.card-hint {
+  margin-top: 4px;
+  color: var(--muted);
+  font-size: 12px;
+}
+.card.loading .card-value {
+  color: var(--border);
+}
+
+/* 대시보드 차트 */
+.dash-charts {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 12px;
+  margin-top: 12px;
+}
+.dash-charts .panel {
+  margin-bottom: 0;
+}
+.chart-title {
+  margin: 0 0 14px;
+  font-size: 15px;
+}
+.trend-chart {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 8px;
+  height: 180px;
+  border-bottom: 1px solid var(--border);
+}
+.trend-col {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-width: 0;
+  outline: none;
+}
+.trend-value {
+  font-size: 11px;
+  color: var(--muted);
+  height: 16px;
+  font-variant-numeric: tabular-nums;
+}
+.trend-track {
+  flex: 1;
+  width: 100%;
+  max-width: 36px;
+  display: flex;
+  align-items: flex-end;
+}
+.trend-bar {
+  width: 100%;
+  min-height: 2px;
+  border-radius: 4px 4px 0 0;
+  background: #93b4f5;
+  transition: background 0.15s;
+}
+.trend-col.current .trend-bar,
+.trend-col:hover .trend-bar,
+.trend-col:focus-visible .trend-bar {
+  background: var(--primary);
+}
+.trend-col.current .trend-value {
+  color: var(--text);
+  font-weight: 600;
+}
+.trend-label {
+  position: absolute;
+  bottom: -22px;
+  font-size: 12px;
+  color: var(--muted);
+}
+.trend-col.current .trend-label {
+  color: var(--text);
+  font-weight: 600;
+}
+.chart-tip {
+  display: none;
+  position: absolute;
+  bottom: calc(100% - 8px);
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 2;
+  padding: 6px 10px;
+  border-radius: 6px;
+  background: var(--sidebar);
+  color: #fff;
+  font-size: 12px;
+  white-space: nowrap;
+  pointer-events: none;
+}
+.chart-tip strong {
+  display: block;
+  font-weight: 600;
+}
+.trend-col:hover .chart-tip,
+.trend-col:focus-visible .chart-tip {
+  display: block;
+}
+.trend-col:first-child .chart-tip {
+  left: 0;
+  transform: none;
+}
+.trend-col:last-child .chart-tip {
+  left: auto;
+  right: 0;
+  transform: none;
+}
+.chart-panel {
+  padding-bottom: 34px;
+}
+.hbar-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 10px;
+}
+.hbar-list li {
+  display: grid;
+  grid-template-columns: 64px 1fr auto;
+  align-items: center;
+  gap: 10px;
+  font-size: 13px;
+}
+.hbar-name {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.hbar-track {
+  height: 12px;
+}
+.hbar {
+  display: block;
+  height: 100%;
+  min-width: 2px;
+  border-radius: 0 4px 4px 0;
+  background: var(--primary);
+}
+.hbar-value {
+  font-variant-numeric: tabular-nums;
+  text-align: right;
+}
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
 }
 
 /* 공통: 버튼 추가 */
@@ -1178,6 +1351,16 @@ a.btn {
   .panel {
     padding: 14px;
   }
+  .cards {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px;
+  }
+  .card {
+    padding: 12px;
+  }
+  .card-value {
+    font-size: 18px;
+  }
   .filter-bar > * {
     flex: 1 1 140px;
   }
@@ -1233,6 +1416,30 @@ a.btn {
   .calendar-wrap .fc .ev .ev-loc,
   .calendar-wrap .fc .ev .ev-time {
     display: none;
+  }
+  /* 폰 월간 달력: 칸이 좁으므로 글자를 줄이고 제목은 한 줄로 자른다 */
+  .calendar-wrap .fc .fc-daygrid-day-number {
+    padding: 2px 4px;
+    font-size: 12px;
+  }
+  .calendar-wrap .fc .fc-col-header-cell-cushion {
+    font-size: 12px;
+  }
+  .calendar-wrap .fc .ev {
+    padding: 0 2px;
+  }
+  .calendar-wrap .fc .ev .ev-title {
+    font-size: 10.5px;
+    font-weight: 600;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .calendar-wrap .fc .fc-daygrid-more-link {
+    font-size: 11px;
+  }
+  .calendar-wrap .fc .fc-daygrid-day-frame {
+    min-height: 64px;
   }
 }
 
