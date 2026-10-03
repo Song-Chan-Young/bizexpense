@@ -1,7 +1,7 @@
 # BizExpense
 
 기업 출장·일정·경비·결재·정산 관리 시스템. 이직용 포트폴리오 프로젝트이며, 원 설계서(MyBatis/MariaDB/Java 17)와 달리
-**Spring Boot 4 + JPA + Java 21 + React** 로 구현한다. 규칙과 상태 흐름은 `README.md` 에 정리되어 있다.
+**Spring Boot 4 + JPA + Java 21 + React** 로 구현한다. 업무 규칙·상태 흐름은 `docs/business-rules.md`, 소개·설계 포인트는 `README.md`(포트폴리오용) 에 있다. 화면 캡처는 `docs/images/`.
 
 ## 실행
 
