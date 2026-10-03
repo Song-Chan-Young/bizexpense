@@ -54,7 +54,7 @@ H2 콘솔: http://localhost:8080/h2-console (JDBC URL `jdbc:h2:file:./.data/bize
 - [x] Phase 1 - 기본 구조 (공통 응답, 예외 처리, 로그, 프로필 분리)
 - [x] Phase 2 - 로그인 / 권한 (JWT, ROLE_USER / ROLE_MANAGER / ROLE_ADMIN)
 - [ ] Phase 3 - 출장
-- [ ] Phase 4 - 일정
+- [x] Phase 4 - 일정 (CRUD, 월간/주간 캘린더, 목록 검색·페이징, 시간대 충돌 검사, 팀 일정 조회) — 출장 연결은 Phase 3 이후
 - [ ] Phase 5 - 경비
 - [ ] Phase 6 - 파일
 - [ ] Phase 7 - 결재
