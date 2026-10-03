@@ -22,7 +22,12 @@ public enum ErrorCode {
 
     // 사용자
     USER_NOT_FOUND(HttpStatus.NOT_FOUND, "사용자를 찾을 수 없습니다."),
-    DISABLED_USER(HttpStatus.FORBIDDEN, "사용이 중지된 계정입니다.");
+    DISABLED_USER(HttpStatus.FORBIDDEN, "사용이 중지된 계정입니다."),
+
+    // 일정
+    SCHEDULE_NOT_FOUND(HttpStatus.NOT_FOUND, "일정을 찾을 수 없습니다."),
+    INVALID_SCHEDULE_PERIOD(HttpStatus.BAD_REQUEST, "종료 일시는 시작 일시보다 뒤여야 합니다."),
+    SCHEDULE_CONFLICT(HttpStatus.CONFLICT, "같은 시간대에 다른 일정이 있습니다.");
 
     private final HttpStatus status;
     private final String message;

@@ -231,7 +231,366 @@ button {
   font-weight: 700;
 }
 
+/* 공통: 버튼 추가 */
+.btn-danger {
+  background: var(--danger);
+  color: #fff;
+}
+.btn-warning {
+  background: #d97706;
+  color: #fff;
+}
+.icon-btn {
+  border: none;
+  background: transparent;
+  font-size: 22px;
+  line-height: 1;
+  cursor: pointer;
+  color: var(--muted);
+}
+
+/* 페이지 헤더 / 툴바 */
+.page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+.toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+.tabs {
+  display: inline-flex;
+  background: #e5e7eb;
+  border-radius: 8px;
+  padding: 3px;
+}
+.tabs button {
+  border: none;
+  background: transparent;
+  padding: 6px 14px;
+  border-radius: 6px;
+  cursor: pointer;
+  color: var(--muted);
+}
+.tabs button.active {
+  background: var(--surface);
+  color: var(--text);
+  font-weight: 600;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.08);
+}
+.tabs-sm button {
+  padding: 4px 10px;
+  font-size: 13px;
+}
+.legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-left: auto;
+  font-size: 12px;
+  color: var(--muted);
+}
+.legend span {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+.legend i {
+  width: 10px;
+  height: 10px;
+  border-radius: 3px;
+}
+
+/* 캘린더 */
+.calendar-wrap {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 16px;
+}
+.calendar-wrap .fc {
+  --fc-border-color: var(--border);
+  --fc-today-bg-color: #eff6ff;
+  --fc-button-bg-color: #fff;
+  --fc-button-text-color: var(--text);
+  --fc-button-border-color: var(--border);
+  --fc-button-hover-bg-color: var(--bg);
+  --fc-button-hover-border-color: var(--border);
+  --fc-button-active-bg-color: var(--primary);
+  --fc-button-active-border-color: var(--primary);
+  font-size: 13px;
+}
+.calendar-wrap .fc .fc-button-primary:not(:disabled).fc-button-active {
+  color: #fff;
+}
+.calendar-wrap .fc .fc-toolbar-title {
+  font-size: 18px;
+}
+.calendar-wrap .fc-event {
+  cursor: pointer;
+}
+.calendar-wrap .fc-daygrid-dot-event .fc-event-title {
+  font-weight: 500;
+}
+.event-cancelled {
+  opacity: 0.45;
+  text-decoration: line-through;
+}
+
+/* 목록 */
+.filter-bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+.filter-bar input,
+.filter-bar select,
+.form-grid input,
+.form-grid select,
+.form-grid textarea {
+  padding: 7px 9px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: var(--surface);
+  font: inherit;
+}
+.table-wrap {
+  overflow-x: auto;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+}
+.table {
+  width: 100%;
+  border-collapse: collapse;
+}
+.table th,
+.table td {
+  padding: 10px 14px;
+  text-align: left;
+  border-bottom: 1px solid var(--border);
+}
+.table th {
+  background: #f9fafb;
+  font-weight: 600;
+  color: var(--muted);
+  font-size: 13px;
+}
+.table tbody tr:last-child td {
+  border-bottom: none;
+}
+.table tr.clickable {
+  cursor: pointer;
+}
+.table tr.clickable:hover {
+  background: #f9fafb;
+}
+.table .empty {
+  text-align: center;
+  color: var(--muted);
+  padding: 32px;
+}
+.nowrap {
+  white-space: nowrap;
+}
+.pagination {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 4px;
+  margin-top: 14px;
+}
+.pagination .muted {
+  margin: 0 12px 0 0;
+}
+.page-btn {
+  min-width: 32px;
+  height: 32px;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  border-radius: 6px;
+  cursor: pointer;
+}
+.page-btn.active {
+  background: var(--primary);
+  border-color: var(--primary);
+  color: #fff;
+}
+.page-btn:disabled {
+  opacity: 0.4;
+  cursor: default;
+}
+
+/* 뱃지 */
+.type-badge {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 4px;
+  color: #fff;
+  font-size: 12px;
+  white-space: nowrap;
+}
+.status-badge {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 999px;
+  font-size: 12px;
+  background: #e5e7eb;
+  white-space: nowrap;
+}
+.status-planned {
+  background: #dbeafe;
+  color: #1e40af;
+}
+.status-ongoing {
+  background: #fef3c7;
+  color: #92400e;
+}
+.status-done {
+  background: #dcfce7;
+  color: #166534;
+}
+.status-cancelled {
+  background: #f3f4f6;
+  color: #6b7280;
+}
+
+/* 모달 */
+.modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.45);
+  display: grid;
+  place-items: center;
+  padding: 16px;
+  z-index: 100;
+}
+.modal {
+  width: 100%;
+  max-width: 520px;
+  max-height: calc(100vh - 32px);
+  overflow-y: auto;
+  background: var(--surface);
+  border-radius: 12px;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+}
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 20px;
+  border-bottom: 1px solid var(--border);
+}
+.modal-header h3 {
+  margin: 0;
+  font-size: 16px;
+}
+.modal-body {
+  padding: 20px;
+}
+.modal-footer {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 8px;
+  padding: 14px 20px;
+  border-top: 1px solid var(--border);
+}
+.confirm-text {
+  margin-right: auto;
+  color: var(--danger);
+}
+
+/* 폼 */
+.form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+}
+.form-grid label {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-weight: 600;
+  font-size: 13px;
+}
+.form-grid input,
+.form-grid select,
+.form-grid textarea {
+  font-weight: 400;
+}
+.form-grid textarea {
+  resize: vertical;
+}
+.span-2 {
+  grid-column: span 2;
+}
+.modal .form-error {
+  margin-top: 12px;
+}
+.alert {
+  margin-top: 16px;
+  padding: 12px 14px;
+  border-radius: 8px;
+  font-size: 13px;
+}
+.alert ul {
+  margin: 8px 0;
+  padding-left: 18px;
+}
+.alert-warning {
+  background: #fffbeb;
+  border: 1px solid #fcd34d;
+  color: #78350f;
+}
+
+/* 상세 */
+.detail-head {
+  display: flex;
+  gap: 6px;
+}
+.detail-title {
+  margin: 10px 0 14px;
+  font-size: 18px;
+}
+.detail-list {
+  display: grid;
+  grid-template-columns: 64px 1fr;
+  gap: 8px 12px;
+  margin: 0;
+}
+.detail-list dt {
+  color: var(--muted);
+}
+.detail-list dd {
+  margin: 0;
+}
+.pre {
+  white-space: pre-wrap;
+}
+.small {
+  font-size: 12px;
+  margin: 14px 0 0;
+}
+
 @media (max-width: 720px) {
+  .form-grid {
+    grid-template-columns: 1fr;
+  }
+  .span-2 {
+    grid-column: auto;
+  }
+  .legend {
+    margin-left: 0;
+  }
+
   .app {
     flex-direction: column;
   }

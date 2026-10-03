@@ -4,7 +4,7 @@ import { useAuth } from '../auth/AuthContext'
 // ready: false 인 메뉴는 이후 Phase 에서 구현 예정
 const MENUS = [
   { to: '/', label: '대시보드', ready: true },
-  { to: '/schedules', label: '내 일정', ready: false },
+  { to: '/schedules', label: '일정', ready: true },
   { to: '/trips', label: '출장', ready: false },
   { to: '/expenses', label: '경비', ready: false },
   { to: '/settlements', label: '정산', ready: false },
