@@ -71,9 +71,13 @@ React 빌드 결과를 Spring Boot 가 함께 서비스하는 **단일 Docker �
 2. [Render](https://render.com) → **New → Blueprint** → 저장소 선택 → **Apply**.
 3. 빌드가 끝나면 `https://bizexpense-xxxx.onrender.com` 주소가 생긴다. 이 링크를 공유하면 PC·폰 어디서든 접속할 수 있다.
 
+Docker 이미지 기본값은 `SPRING_PROFILES_ACTIVE=demo,standalone` 이다. 환경변수를 하나도 설정하지 않아도
+메모리 DB + 데모 데이터로 바로 뜨며, 서버가 재시작되면 데모 데이터로 초기화된다 (체험 서버용).
+PostgreSQL 에 데이터를 유지하려면 Blueprint(`render.yaml`)로 만들거나 아래 환경변수를 직접 설정한다.
+
 | 환경변수 | 설명 |
 |---|---|
-| `SPRING_PROFILES_ACTIVE` | `prod,demo` (데모 데이터 + 체험 계정 안내). 실제 운영은 `prod` 만 |
+| `SPRING_PROFILES_ACTIVE` | `prod,demo` (PostgreSQL + 데모 데이터). 실제 운영은 `prod` 만 |
 | `JWT_SECRET` | Render 가 자동 생성 |
 | `DEMO_PASSWORD` | 체험 계정 비밀번호 (기본 `demo1234`) |
 | `DB_HOST` / `DB_PORT` / `DB_NAME` / `DB_USERNAME` / `DB_PASSWORD` | Render PostgreSQL 에서 자동 연결 |
