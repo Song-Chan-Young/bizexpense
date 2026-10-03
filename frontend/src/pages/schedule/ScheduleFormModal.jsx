@@ -1,7 +1,8 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { SCHEDULE_STATUSES, SCHEDULE_TYPES, scheduleApi } from '../../api/schedules'
+import { tripApi } from '../../api/trips'
 import Modal from '../../components/Modal'
-import { formatRange } from '../../utils/date'
+import { formatDate, formatRange } from '../../utils/date'
 
 /**
  * 일정 등록/수정.
@@ -18,10 +19,25 @@ export default function ScheduleFormModal({ schedule, onClose, onSaved }) {
     location: schedule.location ?? '',
     content: schedule.content ?? '',
     status: schedule.status ?? 'PLANNED',
+    tripId: schedule.tripId ? String(schedule.tripId) : '',
   })
+  const [trips, setTrips] = useState([])
   const [error, setError] = useState('')
   const [conflicts, setConflicts] = useState(null)
   const [saving, setSaving] = useState(false)
+
+  // 연결할 수 있는 내 출장 목록. 이미 연결된 출장이 목록에 없으면(완료 등) 현재 값으로 보여준다.
+  useEffect(() => {
+    tripApi
+      .schedulable()
+      .then((list) => {
+        if (schedule.tripId && !list.some((t) => t.tripId === schedule.tripId)) {
+          list = [{ tripId: schedule.tripId, title: schedule.tripTitle }, ...list]
+        }
+        setTrips(list)
+      })
+      .catch(() => setTrips([]))
+  }, [schedule.tripId, schedule.tripTitle])
 
   const set = (key) => (e) => {
     setForm((f) => ({ ...f, [key]: e.target.value }))
@@ -32,7 +48,7 @@ export default function ScheduleFormModal({ schedule, onClose, onSaved }) {
   const save = async (allowOverlap) => {
     setError('')
     setSaving(true)
-    const body = { ...form, allowOverlap }
+    const body = { ...form, tripId: form.tripId ? Number(form.tripId) : null, allowOverlap }
     try {
       const saved = isEdit
         ? await scheduleApi.update(schedule.scheduleId, body)
@@ -117,6 +133,18 @@ export default function ScheduleFormModal({ schedule, onClose, onSaved }) {
         <label>
           종료
           <input type="datetime-local" value={form.endAt} onChange={set('endAt')} min={form.startAt} required />
+        </label>
+        <label className="span-2">
+          출장 연결 <span className="muted">(선택 · 출장 기간 안의 일정만)</span>
+          <select value={form.tripId} onChange={set('tripId')}>
+            <option value="">연결 안 함</option>
+            {trips.map((t) => (
+              <option key={t.tripId} value={t.tripId}>
+                {t.title}
+                {t.startDate && ` (${formatDate(t.startDate)} ~ ${formatDate(t.endDate)})`}
+              </option>
+            ))}
+          </select>
         </label>
         <label className="span-2">
           장소

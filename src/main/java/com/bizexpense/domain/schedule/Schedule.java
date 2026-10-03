@@ -1,5 +1,6 @@
 package com.bizexpense.domain.schedule;
 
+import com.bizexpense.domain.trip.Trip;
 import com.bizexpense.domain.user.User;
 import com.bizexpense.global.common.BaseTimeEntity;
 import com.bizexpense.global.error.BusinessException;
@@ -23,13 +24,14 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 /**
- * 업무 일정. 출장 연결(trip_id)은 출장 도메인(Phase 3)을 만들 때 추가한다.
+ * 업무 일정. 출장(trip)에 연결할 수 있으며, 연결하면 출장 기간 안에 있어야 한다.
  */
 @Getter
 @Entity
 @Table(name = "schedule", indexes = {
         // 사원별 기간 조회와 시간대 충돌 검사에 사용
-        @Index(name = "idx_schedule_user_period", columnList = "user_id, start_at, end_at")
+        @Index(name = "idx_schedule_user_period", columnList = "user_id, start_at, end_at"),
+        @Index(name = "idx_schedule_trip", columnList = "trip_id")
 })
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Schedule extends BaseTimeEntity {
@@ -42,6 +44,11 @@ public class Schedule extends BaseTimeEntity {
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
+
+    /** 연결된 출장 (선택) */
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "trip_id")
+    private Trip trip;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "schedule_type", nullable = false, length = 20)
@@ -90,6 +97,27 @@ public class Schedule extends BaseTimeEntity {
         this.endAt = endAt;
         this.location = location;
         this.status = status;
+    }
+
+    /**
+     * 출장 연결/해제. 같은 사원의 출장이어야 하고, 일정 기간이 출장 기간 안에 있어야 한다.
+     * 출장 상태(연결 가능 여부) 확인은 서비스에서 한다.
+     */
+    public void linkTrip(Trip trip) {
+        if (trip != null) {
+            if (!trip.isOwnedBy(user.getId())) {
+                throw new BusinessException(ErrorCode.TRIP_NOT_LINKABLE, "본인 출장에만 일정을 연결할 수 있습니다.");
+            }
+            if (!trip.covers(startAt, endAt)) {
+                throw new BusinessException(ErrorCode.SCHEDULE_OUT_OF_TRIP_PERIOD);
+            }
+        }
+        this.trip = trip;
+    }
+
+    /** 출장이 취소되면 연결된 일정도 취소한다. */
+    public void cancel() {
+        this.status = ScheduleStatus.CANCELLED;
     }
 
     public boolean isOwnedBy(Long userId) {

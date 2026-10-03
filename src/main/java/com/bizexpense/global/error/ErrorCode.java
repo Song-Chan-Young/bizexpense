@@ -27,7 +27,21 @@ public enum ErrorCode {
     // 일정
     SCHEDULE_NOT_FOUND(HttpStatus.NOT_FOUND, "일정을 찾을 수 없습니다."),
     INVALID_SCHEDULE_PERIOD(HttpStatus.BAD_REQUEST, "종료 일시는 시작 일시보다 뒤여야 합니다."),
-    SCHEDULE_CONFLICT(HttpStatus.CONFLICT, "같은 시간대에 다른 일정이 있습니다.");
+    SCHEDULE_CONFLICT(HttpStatus.CONFLICT, "같은 시간대에 다른 일정이 있습니다."),
+    SCHEDULE_OUT_OF_TRIP_PERIOD(HttpStatus.BAD_REQUEST, "출장에 연결한 일정은 출장 기간 안에 있어야 합니다."),
+
+    // 출장
+    TRIP_NOT_FOUND(HttpStatus.NOT_FOUND, "출장을 찾을 수 없습니다."),
+    INVALID_TRIP_PERIOD(HttpStatus.BAD_REQUEST, "출장 종료일은 시작일과 같거나 뒤여야 합니다."),
+    INVALID_TRIP_STATUS(HttpStatus.CONFLICT, "현재 출장 상태에서는 처리할 수 없습니다."),
+    TRIP_NOT_LINKABLE(HttpStatus.BAD_REQUEST, "일정을 연결할 수 없는 출장입니다."),
+    TRIP_SCHEDULE_OUT_OF_RANGE(HttpStatus.BAD_REQUEST, "변경한 출장 기간을 벗어나는 연결 일정이 있습니다."),
+
+    // 결재
+    APPROVAL_NOT_FOUND(HttpStatus.NOT_FOUND, "결재 건을 찾을 수 없습니다."),
+    APPROVER_NOT_FOUND(HttpStatus.CONFLICT, "결재할 팀장(또는 관리자)이 없습니다."),
+    APPROVAL_ALREADY_PROCESSED(HttpStatus.CONFLICT, "이미 처리된 결재 건입니다."),
+    REJECT_COMMENT_REQUIRED(HttpStatus.BAD_REQUEST, "반려 사유를 입력하세요.");
 
     private final HttpStatus status;
     private final String message;

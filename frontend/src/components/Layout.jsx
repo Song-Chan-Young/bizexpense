@@ -5,10 +5,10 @@ import { useAuth } from '../auth/AuthContext'
 const MENUS = [
   { to: '/', label: '대시보드', ready: true },
   { to: '/schedules', label: '일정', ready: true },
-  { to: '/trips', label: '출장', ready: false },
+  { to: '/trips', label: '출장', ready: true },
   { to: '/expenses', label: '경비', ready: false },
   { to: '/settlements', label: '정산', ready: false },
-  { to: '/approvals', label: '결재', ready: false, roles: ['MANAGER', 'ADMIN'] },
+  { to: '/approvals', label: '결재', ready: true, roles: ['MANAGER', 'ADMIN'] },
   { to: '/admin', label: '관리', ready: false, roles: ['ADMIN'] },
 ]
 
@@ -30,7 +30,7 @@ export default function Layout() {
         <nav>
           {menus.map((m) =>
             m.ready ? (
-              <NavLink key={m.to} to={m.to} end className="nav-item">
+              <NavLink key={m.to} to={m.to} end={m.to === '/'} className="nav-item">
                 {m.label}
               </NavLink>
             ) : (

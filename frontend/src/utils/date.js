@@ -20,3 +20,16 @@ export function formatRange(start, end) {
   const sameDay = s.toDateString() === e.toDateString()
   return `${formatDateTime(start)} ~ ${sameDay ? `${pad(e.getHours())}:${pad(e.getMinutes())}` : formatDateTime(end)}`
 }
+
+/** 'YYYY-MM-DD' -> '10/12 (월)' */
+export function formatDate(value) {
+  const d = new Date(`${value}T00:00:00`)
+  return `${d.getMonth() + 1}/${d.getDate()} (${'일월화수목금토'[d.getDay()]})`
+}
+
+/** 서버 LocalDateTime -> '2026-10-03 11:20' */
+export function formatTimestamp(value) {
+  if (!value) return '-'
+  const d = new Date(value)
+  return `${toDateParam(d)} ${pad(d.getHours())}:${pad(d.getMinutes())}`
+}
