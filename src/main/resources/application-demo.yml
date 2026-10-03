@@ -1,0 +1,5 @@
+# 데모(체험) 서버: prod 와 함께 사용 (SPRING_PROFILES_ACTIVE=prod,demo)
+# 처음 실행할 때 체험 계정과 예시 데이터를 만들고, 로그인 화면에 체험 계정을 안내한다.
+demo:
+  enabled: true
+  password: ${DEMO_PASSWORD:demo1234}

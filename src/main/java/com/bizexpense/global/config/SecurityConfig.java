@@ -37,7 +37,7 @@ public class SecurityConfig {
                 // H2 콘솔이 iframe 을 사용
                 .headers(h -> h.frameOptions(f -> f.sameOrigin()))
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api/auth/login", "/h2-console/**", "/error").permitAll()
+                        .requestMatchers("/api/auth/login", "/api/public/**", "/h2-console/**", "/error").permitAll()
                         .requestMatchers("/api/admin/**").hasRole("ADMIN")
                         .requestMatchers("/api/**").authenticated()
                         .anyRequest().permitAll())

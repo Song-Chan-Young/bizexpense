@@ -10,11 +10,17 @@ spring:
         default_batch_fetch_size: 100
 
 server:
-  port: 8080
+  # 배포 환경(Render 등)은 PORT 환경변수로 포트를 지정한다
+  port: ${PORT:8080}
+  forward-headers-strategy: framework
 
 jwt:
   # 액세스 토큰 유효시간 (밀리초) - 기본 2시간
   access-token-validity: 7200000
+
+demo:
+  enabled: false
+  password: ""
 
 logging:
   level:

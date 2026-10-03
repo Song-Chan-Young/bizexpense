@@ -4,12 +4,12 @@ import { useAuth } from '../auth/AuthContext'
 // ready: false 인 메뉴는 이후 Phase 에서 구현 예정
 const MENUS = [
   { to: '/', label: '대시보드', ready: true },
-  { to: '/schedules', label: '내 일정', ready: false },
-  { to: '/trips', label: '출장', ready: false },
-  { to: '/expenses', label: '경비', ready: false },
+  { to: '/schedules', label: '일정', ready: true },
+  { to: '/trips', label: '출장', ready: true },
+  { to: '/expenses', label: '경비', ready: true },
   { to: '/settlements', label: '정산', ready: false },
-  { to: '/approvals', label: '결재', ready: false, roles: ['MANAGER', 'ADMIN'] },
-  { to: '/admin', label: '관리', ready: false, roles: ['ADMIN'] },
+  { to: '/approvals', label: '결재', ready: true, roles: ['MANAGER', 'ADMIN'] },
+  { to: '/admin', label: '기준 코드', ready: true, roles: ['ADMIN'] },
 ]
 
 export default function Layout() {
@@ -30,7 +30,7 @@ export default function Layout() {
         <nav>
           {menus.map((m) =>
             m.ready ? (
-              <NavLink key={m.to} to={m.to} end className="nav-item">
+              <NavLink key={m.to} to={m.to} end={m.to === '/'} className="nav-item">
                 {m.label}
               </NavLink>
             ) : (

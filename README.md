@@ -24,17 +24,74 @@ npm install
 npm run dev
 ```
 
-로컬 프로필은 `./.data/` 아래 H2 파일 DB를 사용하고, 처음 실행할 때 테스트 계정을 만든다.
+로컬 프로필은 `./.data/` 아래 H2 파일 DB를 사용하고, 처음 실행할 때 데모 계정과 예시 데이터(출장·일정·경비·결재)를 만든다.
+로그인 화면의 체험 계정 버튼으로 바로 로그인할 수 있다.
 
-| 아이디 | 권한 | 부서 | 비밀번호 |
+| 아이디 | 권한 | 부서 | 비밀번호 (로컬) |
 |---|---|---|---|
 | admin | 관리자 | 경영지원팀 | pass1234 |
 | manager1 | 팀장 | 영업1팀 | pass1234 |
 | user1, user2 | 일반 직원 | 영업1팀 | pass1234 |
+| manager2, user3 | 팀장 / 일반 직원 | 영업2팀 | pass1234 |
 
 H2 콘솔: http://localhost:8080/h2-console (JDBC URL `jdbc:h2:file:./.data/bizexpense`)
 
 운영 프로필(`prod`)은 환경변수 `DB_URL`, `DB_USERNAME`, `DB_PASSWORD`, `JWT_SECRET`(Base64, 256bit 이상)을 사용한다.
+
+## 출장 상태 흐름
+
+```text
+DRAFT(임시저장) ─신청─▶ REQUESTED(신청) ─승인─▶ APPROVED(승인) ─시작─▶ IN_PROGRESS(진행중) ─완료─▶ COMPLETED(완료)
+     ▲                      │
+     │                    반려 (사유 필수)
+     │                      ▼
+     └──── 수정 후 재신청 ── REJECTED(반려)
+
+취소: DRAFT / REQUESTED / APPROVED 에서 가능 (대기 중 결재 건, 연결된 일정도 함께 취소)
+삭제: DRAFT 만 가능 (연결된 일정은 남기고 연결만 해제)
+```
+
+결재자: 일반 직원 → 같은 부서 팀장(없으면 관리자), 팀장·관리자 → 다른 관리자.
+결재 건은 신청할 때마다 새로 생기므로 반려 → 재신청 이력이 모두 남는다.
+
+## 경비 규칙
+
+- 출장이 시작된 뒤(진행중/완료)에만 본인 출장에 경비를 등록할 수 있다.
+- 사용일은 출장 시작 30일 전(교통·숙박 사전 예매) ~ 출장 종료일까지 인정한다.
+- 수정/삭제는 임시저장·반려 상태만 가능하다. 이후 상태는 정산(Phase 8) 흐름이 바꾼다.
+- 결제 수단의 `법인 결제` 여부로 출장별 법인카드 합계와 개인 부담(정산 지급 예정)을 나눈다.
+- 비용 항목/결제 수단은 삭제 대신 사용 중지한다 (기존 경비 보존). 초기 데이터는 모든 환경에서 자동 생성된다.
+
+## 배포 (Render)
+
+React 빌드 결과를 Spring Boot 가 함께 서비스하는 **단일 Docker 이미지**로 배포한다 (`Dockerfile`).
+`render.yaml`(Blueprint) 이 웹 서비스와 PostgreSQL 을 함께 만든다.
+
+1. GitHub 에 저장소를 올린다 (`main` 브랜치).
+2. [Render](https://render.com) → **New → Blueprint** → 저장소 선택 → **Apply**.
+3. 빌드가 끝나면 `https://bizexpense-xxxx.onrender.com` 주소가 생긴다. 이 링크를 공유하면 PC·폰 어디서든 접속할 수 있다.
+
+| 환경변수 | 설명 |
+|---|---|
+| `SPRING_PROFILES_ACTIVE` | `prod,demo` (데모 데이터 + 체험 계정 안내). 실제 운영은 `prod` 만 |
+| `JWT_SECRET` | Render 가 자동 생성 |
+| `DEMO_PASSWORD` | 체험 계정 비밀번호 (기본 `demo1234`) |
+| `DB_HOST` / `DB_PORT` / `DB_NAME` / `DB_USERNAME` / `DB_PASSWORD` | Render PostgreSQL 에서 자동 연결 |
+
+- 데모 데이터는 DB 에 사용자가 없을 때 한 번만, **처음 실행한 날 기준 날짜**로 만들어진다.
+- 무료 플랜은 15분간 요청이 없으면 잠들어 첫 접속에 1분 정도 걸리고, 무료 PostgreSQL 은 30일 후 만료된다.
+  계속 쓰려면 유료 플랜(웹 서비스 Starter, DB Basic)으로 바꾼다.
+
+로컬에서 운영 모드 확인 (PostgreSQL 대신 H2):
+
+```bash
+cd frontend && npm ci && npm run build && cd ..
+cp -R frontend/dist src/main/resources/static
+./gradlew bootJar
+SPRING_PROFILES_ACTIVE=prod,demo PORT=9090 JWT_SECRET=any-secret \
+DB_URL='jdbc:h2:mem:prod;MODE=PostgreSQL;DATABASE_TO_LOWER=TRUE' DB_USERNAME=sa DB_PASSWORD= \
+java -jar build/libs/app.jar
+```
 
 ## 테스트
 
@@ -53,11 +110,11 @@ H2 콘솔: http://localhost:8080/h2-console (JDBC URL `jdbc:h2:file:./.data/bize
 
 - [x] Phase 1 - 기본 구조 (공통 응답, 예외 처리, 로그, 프로필 분리)
 - [x] Phase 2 - 로그인 / 권한 (JWT, ROLE_USER / ROLE_MANAGER / ROLE_ADMIN)
-- [ ] Phase 3 - 출장
-- [ ] Phase 4 - 일정
-- [ ] Phase 5 - 경비
+- [x] Phase 3 - 출장 (CRUD, 상태 전이, 검색·페이징, 일정 연결) + 출장 결재(승인/반려/재신청)
+- [x] Phase 4 - 일정 (CRUD, 월간/주간 캘린더, 목록 검색·페이징, 시간대 충돌 검사, 팀 일정 조회, 출장 연결)
+- [x] Phase 5 - 경비 (비용 항목/결제 수단 관리, 경비 CRUD, 검색·페이징·합계, 출장별 경비 요약)
 - [ ] Phase 6 - 파일
-- [ ] Phase 7 - 결재
+- [ ] Phase 7 - 결재 (공통 결재 구조와 출장 결재는 완료, 정산 결재 연결 예정)
 - [ ] Phase 8 - 정산
 - [ ] Phase 9 - 대시보드
 - [ ] Phase 10 - 완성도

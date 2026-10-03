@@ -19,6 +19,11 @@ jwt:
   # 로컬 전용 키. 운영에서는 JWT_SECRET 환경변수를 사용한다.
   secret: bG9jYWwtZGV2LW9ubHktYml6ZXhwZW5zZS1qd3Qtc2VjcmV0LWtleS0yMDI2LTEwLTAz
 
+# 로컬 개발도 데모 데이터와 체험 계정 안내를 사용한다
+demo:
+  enabled: true
+  password: pass1234
+
 logging:
   level:
     org.hibernate.SQL: DEBUG
