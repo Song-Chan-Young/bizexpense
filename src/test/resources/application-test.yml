@@ -1,0 +1,11 @@
+spring:
+  datasource:
+    url: jdbc:h2:mem:bizexpense-test;MODE=PostgreSQL;DATABASE_TO_LOWER=TRUE;DEFAULT_NULL_ORDERING=HIGH
+    username: sa
+    password:
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+
+jwt:
+  secret: dGVzdC1vbmx5LWJpemV4cGVuc2Utand0LXNlY3JldC1rZXktZm9yLXVuaXQtdGVzdHM=

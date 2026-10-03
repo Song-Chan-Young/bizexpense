@@ -1,0 +1,22 @@
+spring:
+  application:
+    name: bizexpense
+  profiles:
+    default: local
+  jpa:
+    open-in-view: false
+    properties:
+      hibernate:
+        default_batch_fetch_size: 100
+
+server:
+  port: 8080
+
+jwt:
+  # 액세스 토큰 유효시간 (밀리초) - 기본 2시간
+  access-token-validity: 7200000
+
+logging:
+  level:
+    root: INFO
+    com.bizexpense: DEBUG
