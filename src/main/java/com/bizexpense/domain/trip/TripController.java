@@ -48,6 +48,12 @@ public class TripController {
         return ApiResponse.ok(tripService.schedulableTrips(loginUser));
     }
 
+    /** 경비 등록 화면용: 경비를 등록할 수 있는 내 출장 */
+    @GetMapping("/expensable")
+    public ApiResponse<List<TripOptionResponse>> expensable(@AuthenticationPrincipal LoginUser loginUser) {
+        return ApiResponse.ok(tripService.expensableTrips(loginUser));
+    }
+
     @GetMapping("/{tripId}")
     public ApiResponse<TripDetailResponse> get(@AuthenticationPrincipal LoginUser loginUser,
                                                @PathVariable Long tripId) {

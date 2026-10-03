@@ -36,6 +36,9 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Trip extends BaseTimeEntity {
 
+    /** 출장 시작 전 사전 예매 경비를 인정하는 일수 */
+    public static final int PRE_BOOKING_DAYS = 30;
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "trip_id")
@@ -138,6 +141,14 @@ public class Trip extends BaseTimeEntity {
     public boolean covers(LocalDateTime startAt, LocalDateTime endAt) {
         return !startAt.isBefore(startDate.atStartOfDay())
                 && !endAt.isAfter(endDate.plusDays(1).atStartOfDay());
+    }
+
+    /**
+     * 경비 사용일로 인정하는 기간: 출장 시작 {@value #PRE_BOOKING_DAYS}일 전 ~ 종료일.
+     * 교통편·숙소를 미리 예매하는 경우를 고려해 시작일 이전 사용분도 일정 기간 인정한다.
+     */
+    public boolean acceptsExpenseOn(LocalDate usedAt) {
+        return !usedAt.isBefore(startDate.minusDays(PRE_BOOKING_DAYS)) && !usedAt.isAfter(endDate);
     }
 
     private void requireStatus(boolean allowed, String action) {

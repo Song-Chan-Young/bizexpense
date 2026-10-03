@@ -51,11 +51,11 @@ public record TripResponse(
     }
 
     public record Actions(boolean edit, boolean request, boolean cancel, boolean start,
-                          boolean complete, boolean delete, boolean addSchedule) {
+                          boolean complete, boolean delete, boolean addSchedule, boolean addExpense) {
 
         static Actions of(Trip t, Long viewerId) {
             if (!t.isOwnedBy(viewerId)) {
-                return new Actions(false, false, false, false, false, false, false);
+                return new Actions(false, false, false, false, false, false, false, false);
             }
             TripStatus s = t.getStatus();
             return new Actions(
@@ -65,7 +65,8 @@ public record TripResponse(
                     s == TripStatus.APPROVED,
                     s == TripStatus.IN_PROGRESS,
                     s == TripStatus.DRAFT,
-                    s.isSchedulable());
+                    s.isSchedulable(),
+                    s.isExpensable());
         }
     }
 }

@@ -6,10 +6,10 @@ const MENUS = [
   { to: '/', label: '대시보드', ready: true },
   { to: '/schedules', label: '일정', ready: true },
   { to: '/trips', label: '출장', ready: true },
-  { to: '/expenses', label: '경비', ready: false },
+  { to: '/expenses', label: '경비', ready: true },
   { to: '/settlements', label: '정산', ready: false },
   { to: '/approvals', label: '결재', ready: true, roles: ['MANAGER', 'ADMIN'] },
-  { to: '/admin', label: '관리', ready: false, roles: ['ADMIN'] },
+  { to: '/admin', label: '기준 코드', ready: true, roles: ['ADMIN'] },
 ]
 
 export default function Layout() {

@@ -11,6 +11,7 @@ import com.bizexpense.domain.trip.dto.TripOptionResponse;
 import com.bizexpense.domain.trip.dto.TripRequest;
 import com.bizexpense.domain.trip.dto.TripResponse;
 import com.bizexpense.domain.trip.dto.TripSearchCondition;
+import com.bizexpense.domain.user.AccessPolicy;
 import com.bizexpense.domain.user.User;
 import com.bizexpense.domain.user.UserRepository;
 import com.bizexpense.global.common.PageResponse;
@@ -19,7 +20,6 @@ import com.bizexpense.global.error.ErrorCode;
 import com.bizexpense.global.security.LoginUser;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Objects;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -57,6 +57,14 @@ public class TripService {
     /** 일정을 연결할 수 있는 내 출장 */
     public List<TripOptionResponse> schedulableTrips(LoginUser loginUser) {
         List<TripStatus> statuses = Arrays.stream(TripStatus.values()).filter(TripStatus::isSchedulable).toList();
+        return tripRepository.findByUserIdAndStatusInOrderByStartDateDesc(loginUser.userId(), statuses).stream()
+                .map(TripOptionResponse::from)
+                .toList();
+    }
+
+    /** 경비를 등록할 수 있는 내 출장 (진행중, 완료) */
+    public List<TripOptionResponse> expensableTrips(LoginUser loginUser) {
+        List<TripStatus> statuses = Arrays.stream(TripStatus.values()).filter(TripStatus::isExpensable).toList();
         return tripRepository.findByUserIdAndStatusInOrderByStartDateDesc(loginUser.userId(), statuses).stream()
                 .map(TripOptionResponse::from)
                 .toList();
@@ -159,21 +167,12 @@ public class TripService {
     /** 변경 작업은 본인 출장만 */
     private Trip findOwned(LoginUser loginUser, Long tripId) {
         Trip trip = findDetail(tripId);
-        if (!trip.isOwnedBy(loginUser.userId())) {
-            throw new BusinessException(ErrorCode.ACCESS_DENIED);
-        }
+        AccessPolicy.checkOwner(loginUser, trip.getUser());
         return trip;
     }
 
     /** 조회는 본인, 같은 부서 팀장, 관리자 */
     private void checkReadable(Trip trip, LoginUser loginUser) {
-        if (trip.isOwnedBy(loginUser.userId()) || loginUser.isAdmin()) {
-            return;
-        }
-        Long ownerDeptId = trip.getUser().getDepartment() == null ? null : trip.getUser().getDepartment().getId();
-        if (loginUser.isManager() && ownerDeptId != null && Objects.equals(ownerDeptId, loginUser.departmentId())) {
-            return;
-        }
-        throw new BusinessException(ErrorCode.ACCESS_DENIED);
+        AccessPolicy.checkReadable(loginUser, trip.getUser());
     }
 }
