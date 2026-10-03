@@ -1,0 +1,43 @@
+# Render Blueprint: 저장소를 연결하면 웹 서비스 + PostgreSQL 을 함께 만든다.
+# https://render.com/docs/blueprint-spec
+services:
+  - type: web
+    name: bizexpense
+    runtime: docker
+    plan: free
+    region: singapore
+    healthCheckPath: /api/public/health
+    envVars:
+      - key: SPRING_PROFILES_ACTIVE
+        value: prod,demo
+      - key: JWT_SECRET
+        generateValue: true
+      - key: DEMO_PASSWORD
+        value: demo1234
+      - key: DB_HOST
+        fromDatabase:
+          name: bizexpense-db
+          property: host
+      - key: DB_PORT
+        fromDatabase:
+          name: bizexpense-db
+          property: port
+      - key: DB_NAME
+        fromDatabase:
+          name: bizexpense-db
+          property: database
+      - key: DB_USERNAME
+        fromDatabase:
+          name: bizexpense-db
+          property: user
+      - key: DB_PASSWORD
+        fromDatabase:
+          name: bizexpense-db
+          property: password
+
+databases:
+  - name: bizexpense-db
+    plan: free
+    region: singapore
+    databaseName: bizexpense
+    user: bizexpense

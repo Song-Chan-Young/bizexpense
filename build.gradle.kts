@@ -43,3 +43,12 @@ dependencies {
 tasks.withType<Test> {
 	useJUnitPlatform()
 }
+
+// 배포용 실행 jar 이름을 고정하고(app.jar), 사용하지 않는 plain jar 는 만들지 않는다
+tasks.bootJar {
+	archiveFileName.set("app.jar")
+}
+
+tasks.jar {
+	enabled = false
+}
