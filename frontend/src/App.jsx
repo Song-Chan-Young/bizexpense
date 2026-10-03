@@ -4,7 +4,9 @@ import RequireAuth from './auth/RequireAuth'
 import Layout from './components/Layout'
 import DashboardPage from './pages/DashboardPage'
 import LoginPage from './pages/LoginPage'
+import AdminCodePage from './pages/admin/AdminCodePage'
 import ApprovalPage from './pages/approval/ApprovalPage'
+import ExpenseListPage from './pages/expense/ExpenseListPage'
 import SchedulePage from './pages/schedule/SchedulePage'
 import TripDetailPage from './pages/trip/TripDetailPage'
 import TripFormPage from './pages/trip/TripFormPage'
@@ -29,6 +31,15 @@ export default function App() {
             <Route path="trips/new" element={<TripFormPage />} />
             <Route path="trips/:id" element={<TripDetailPage />} />
             <Route path="trips/:id/edit" element={<TripFormPage />} />
+            <Route path="expenses" element={<ExpenseListPage />} />
+            <Route
+              path="admin"
+              element={
+                <RequireAuth roles={['ADMIN']}>
+                  <AdminCodePage />
+                </RequireAuth>
+              }
+            />
             <Route
               path="approvals"
               element={

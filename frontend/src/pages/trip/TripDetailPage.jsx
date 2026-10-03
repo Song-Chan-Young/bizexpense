@@ -8,6 +8,7 @@ import { formatDate, formatRange, formatTimestamp } from '../../utils/date'
 import { formatWon } from '../../utils/format'
 import ScheduleDetailModal from '../schedule/ScheduleDetailModal'
 import ScheduleFormModal from '../schedule/ScheduleFormModal'
+import TripExpenseSection from './TripExpenseSection'
 
 // 상태 변경 버튼: actions 의 키 → [버튼 문구, 확인 메시지, API action, 위험 여부]
 const ACTIONS = {
@@ -156,6 +157,8 @@ export default function TripDetailPage() {
         )}
       </section>
 
+      <TripExpenseSection trip={trip} />
+
       <section className="panel">
         <div className="panel-header">
           <h3>결재 이력</h3>
@@ -163,6 +166,7 @@ export default function TripDetailPage() {
         {approvals.length === 0 ? (
           <p className="muted empty-inline">아직 신청하지 않았습니다.</p>
         ) : (
+          <div className="table-wrap">
           <table className="table compact">
             <thead>
               <tr>
@@ -182,11 +186,12 @@ export default function TripDetailPage() {
                     <StatusBadge status={a.status} label={a.statusLabel} />
                   </td>
                   <td className="nowrap">{formatTimestamp(a.processedAt)}</td>
-                  <td>{a.comment || '-'}</td>
+                  <td className="wrap">{a.comment || '-'}</td>
                 </tr>
               ))}
             </tbody>
           </table>
+          </div>
         )}
       </section>
 

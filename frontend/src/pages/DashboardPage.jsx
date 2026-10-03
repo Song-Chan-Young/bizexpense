@@ -1,8 +1,9 @@
 import { useAuth } from '../auth/AuthContext'
+import ScheduleAgenda from './schedule/ScheduleAgenda'
 
 // 통계 수치는 Phase 9(대시보드)에서 /api/dashboard/* 와 연결한다.
 const CARDS = {
-  USER: ['이번 달 내 경비', '정산 예정액', '결재 대기', '출장 예정', '오늘 일정'],
+  USER: ['이번 달 내 경비', '정산 예정액', '결재 대기', '출장 예정'],
   MANAGER: ['결재 대기', '이번 달 팀 경비', '이번 달 출장', '반려 건수'],
   ADMIN: ['전체 경비', '이번 달 경비', '미결재', '정산 완료'],
 }
@@ -16,6 +17,9 @@ export default function DashboardPage() {
       <p className="muted">
         {user.name}님, 안녕하세요. ({user.departmentName ?? '부서 없음'} · {user.roleLabel})
       </p>
+
+      {/* 일정을 맨 위에서 바로 확인 */}
+      <ScheduleAgenda />
 
       <div className="cards">
         {CARDS[user.role].map((title) => (

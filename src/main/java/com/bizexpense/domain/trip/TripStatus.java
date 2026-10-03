@@ -38,6 +38,11 @@ public enum TripStatus {
         return this == DRAFT || this == REQUESTED || this == APPROVED;
     }
 
+    /** 경비를 등록할 수 있는 상태: 출장이 시작된 뒤 (진행중, 완료) */
+    public boolean isExpensable() {
+        return this == IN_PROGRESS || this == COMPLETED;
+    }
+
     /** 일정을 연결할 수 있는 상태 (끝났거나 취소된 출장 제외) */
     public boolean isSchedulable() {
         return this != COMPLETED && this != CANCELLED;

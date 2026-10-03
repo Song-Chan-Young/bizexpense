@@ -7,6 +7,7 @@ import com.bizexpense.domain.schedule.dto.ScheduleResponse;
 import com.bizexpense.domain.schedule.dto.ScheduleSearchCondition;
 import com.bizexpense.domain.trip.Trip;
 import com.bizexpense.domain.trip.TripRepository;
+import com.bizexpense.domain.user.AccessPolicy;
 import com.bizexpense.domain.user.User;
 import com.bizexpense.domain.user.UserRepository;
 import com.bizexpense.global.common.PageResponse;
@@ -16,7 +17,6 @@ import com.bizexpense.global.security.LoginUser;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Objects;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
@@ -156,22 +156,12 @@ public class ScheduleService {
         }
     }
 
-    /** 본인, 같은 부서 팀장, 관리자만 조회 가능 */
     private void checkReadable(Schedule schedule, LoginUser loginUser) {
-        if (schedule.isOwnedBy(loginUser.userId()) || loginUser.isAdmin()) {
-            return;
-        }
-        Long ownerDeptId = schedule.getUser().getDepartment() == null ? null : schedule.getUser().getDepartment().getId();
-        if (loginUser.isManager() && ownerDeptId != null && Objects.equals(ownerDeptId, loginUser.departmentId())) {
-            return;
-        }
-        throw new BusinessException(ErrorCode.ACCESS_DENIED);
+        AccessPolicy.checkReadable(loginUser, schedule.getUser());
     }
 
     /** 수정/삭제는 본인 일정만 가능 */
     private void checkOwner(Schedule schedule, LoginUser loginUser) {
-        if (!schedule.isOwnedBy(loginUser.userId())) {
-            throw new BusinessException(ErrorCode.ACCESS_DENIED);
-        }
+        AccessPolicy.checkOwner(loginUser, schedule.getUser());
     }
 }
