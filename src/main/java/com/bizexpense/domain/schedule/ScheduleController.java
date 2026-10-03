@@ -1,5 +1,8 @@
 package com.bizexpense.domain.schedule;
 
+import io.swagger.v3.oas.annotations.tags.Tag;
+import com.bizexpense.domain.audit.AuditAction;
+import com.bizexpense.domain.audit.Audited;
 import com.bizexpense.global.common.ViewScope;
 import com.bizexpense.domain.schedule.dto.ScheduleConflictResponse;
 import com.bizexpense.domain.schedule.dto.ScheduleRequest;
@@ -31,6 +34,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
+@Tag(name = "03. 일정", description = "일정 등록·조회, 캘린더, 충돌 검사")
 @RestController
 @RequestMapping("/api/schedules")
 @RequiredArgsConstructor
@@ -73,6 +77,7 @@ public class ScheduleController {
         return ApiResponse.ok(scheduleService.get(loginUser, scheduleId));
     }
 
+    @Audited(AuditAction.SCHEDULE_CREATE)
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public ApiResponse<ScheduleResponse> create(@AuthenticationPrincipal LoginUser loginUser,
@@ -80,6 +85,7 @@ public class ScheduleController {
         return ApiResponse.ok(scheduleService.create(loginUser, request));
     }
 
+    @Audited(AuditAction.SCHEDULE_UPDATE)
     @PutMapping("/{scheduleId}")
     public ApiResponse<ScheduleResponse> update(@AuthenticationPrincipal LoginUser loginUser,
                                                 @PathVariable Long scheduleId,
@@ -87,6 +93,7 @@ public class ScheduleController {
         return ApiResponse.ok(scheduleService.update(loginUser, scheduleId, request));
     }
 
+    @Audited(AuditAction.SCHEDULE_DELETE)
     @DeleteMapping("/{scheduleId}")
     public ApiResponse<Void> delete(@AuthenticationPrincipal LoginUser loginUser,
                                     @PathVariable Long scheduleId) {

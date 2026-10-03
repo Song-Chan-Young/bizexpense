@@ -1,5 +1,8 @@
 package com.bizexpense.domain.trip;
 
+import io.swagger.v3.oas.annotations.tags.Tag;
+import com.bizexpense.domain.audit.AuditAction;
+import com.bizexpense.domain.audit.Audited;
 import com.bizexpense.domain.trip.dto.TripDetailResponse;
 import com.bizexpense.domain.trip.dto.TripOptionResponse;
 import com.bizexpense.domain.trip.dto.TripRequest;
@@ -27,6 +30,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
+@Tag(name = "04. 출장", description = "출장 등록·상태 전이(신청/취소/시작/완료)")
 @RestController
 @RequestMapping("/api/trips")
 @RequiredArgsConstructor
@@ -60,6 +64,7 @@ public class TripController {
         return ApiResponse.ok(tripService.get(loginUser, tripId));
     }
 
+    @Audited(AuditAction.TRIP_CREATE)
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public ApiResponse<TripResponse> create(@AuthenticationPrincipal LoginUser loginUser,
@@ -67,6 +72,7 @@ public class TripController {
         return ApiResponse.ok(tripService.create(loginUser, request));
     }
 
+    @Audited(AuditAction.TRIP_UPDATE)
     @PutMapping("/{tripId}")
     public ApiResponse<TripResponse> update(@AuthenticationPrincipal LoginUser loginUser,
                                             @PathVariable Long tripId,
@@ -74,27 +80,32 @@ public class TripController {
         return ApiResponse.ok(tripService.update(loginUser, tripId, request));
     }
 
+    @Audited(AuditAction.TRIP_DELETE)
     @DeleteMapping("/{tripId}")
     public ApiResponse<Void> delete(@AuthenticationPrincipal LoginUser loginUser, @PathVariable Long tripId) {
         tripService.delete(loginUser, tripId);
         return ApiResponse.ok();
     }
 
+    @Audited(AuditAction.TRIP_REQUEST)
     @PostMapping("/{tripId}/request")
     public ApiResponse<TripResponse> request(@AuthenticationPrincipal LoginUser loginUser, @PathVariable Long tripId) {
         return ApiResponse.ok(tripService.request(loginUser, tripId));
     }
 
+    @Audited(AuditAction.TRIP_CANCEL)
     @PostMapping("/{tripId}/cancel")
     public ApiResponse<TripResponse> cancel(@AuthenticationPrincipal LoginUser loginUser, @PathVariable Long tripId) {
         return ApiResponse.ok(tripService.cancel(loginUser, tripId));
     }
 
+    @Audited(AuditAction.TRIP_START)
     @PostMapping("/{tripId}/start")
     public ApiResponse<TripResponse> start(@AuthenticationPrincipal LoginUser loginUser, @PathVariable Long tripId) {
         return ApiResponse.ok(tripService.start(loginUser, tripId));
     }
 
+    @Audited(AuditAction.TRIP_COMPLETE)
     @PostMapping("/{tripId}/complete")
     public ApiResponse<TripResponse> complete(@AuthenticationPrincipal LoginUser loginUser,
                                               @PathVariable Long tripId) {

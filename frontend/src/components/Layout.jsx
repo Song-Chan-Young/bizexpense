@@ -10,6 +10,7 @@ const MENUS = [
   { to: '/settlements', label: '정산', ready: true },
   { to: '/approvals', label: '결재', ready: true, roles: ['MANAGER', 'ADMIN'] },
   { to: '/admin', label: '기준 코드', ready: true, roles: ['ADMIN'] },
+  { to: '/admin/audit-logs', label: '감사 로그', ready: true, roles: ['ADMIN'] },
 ]
 
 export default function Layout() {
@@ -30,7 +31,7 @@ export default function Layout() {
         <nav>
           {menus.map((m) =>
             m.ready ? (
-              <NavLink key={m.to} to={m.to} end={m.to === '/'} className="nav-item">
+              <NavLink key={m.to} to={m.to} end={m.to === '/' || m.to === '/admin'} className="nav-item">
                 {m.label}
               </NavLink>
             ) : (

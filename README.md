@@ -141,6 +141,21 @@ DB_URL='jdbc:h2:mem:prod;MODE=PostgreSQL;DATABASE_TO_LOWER=TRUE' DB_USERNAME=sa 
 java -jar build/libs/app.jar
 ```
 
+## 감사 로그
+
+변경 요청(등록·수정·삭제·결재·정산·기준 코드·로그인/로그아웃)마다 **누가 · 언제 · 어디서(IP) · 무엇을(작업·대상) · 결과**를 남긴다.
+
+- 컨트롤러 메서드에 `@Audited(AuditAction.XXX)` 를 붙이면 `AuditAspect`(AOP)가 기록한다. 조회 요청은 남기지 않는다.
+- 실패(권한 없음, 상태 오류, 로그인 실패 등)도 오류 코드와 함께 남긴다. 입력값 검증 오류(400)는 메서드 실행 전이라 남지 않는다.
+- 대상 ID는 응답 데이터의 첫 번째 ID, 없으면(삭제 등) 주소의 마지막 경로 변수.
+- 사용자 삭제·이름 변경과 무관하게 남도록 외래 키 없이 값으로 저장한다. 저장 실패가 업무 요청을 막지 않는다.
+- 관리자 메뉴 **감사 로그**(`GET /api/admin/audit-logs`)에서 수행자·대상·작업·결과·기간으로 검색한다.
+
+## API 문서
+
+- Swagger UI: `/swagger-ui.html` (배포: https://bizexpense-73h9.onrender.com/swagger-ui.html), OpenAPI JSON: `/v3/api-docs`
+- `POST /api/auth/login` 응답의 `accessToken` 을 **Authorize** 에 넣으면 나머지 API 를 호출해 볼 수 있다.
+
 ## 테스트
 
 ```bash
@@ -165,4 +180,4 @@ java -jar build/libs/app.jar
 - [x] Phase 7 - 결재 (공통 결재 구조: 출장·정산 결재, 승인/반려/재신청, 결재함/내 신청/전체)
 - [x] Phase 8 - 정산 (금액 계산, 신청/반려/재신청, 관리자 지급 처리, 중복 정산 방지)
 - [x] Phase 9 - 대시보드 (역할별 통계 카드, 최근 6개월 경비 추이, 이번 달 항목별 경비, 이번 주 일정)
-- [ ] Phase 10 - 완성도
+- [x] Phase 10 - 완성도 (감사 로그, API 문서(Swagger UI))

@@ -1,5 +1,8 @@
 package com.bizexpense.domain.approval;
 
+import io.swagger.v3.oas.annotations.tags.Tag;
+import com.bizexpense.domain.audit.AuditAction;
+import com.bizexpense.domain.audit.Audited;
 import com.bizexpense.domain.approval.dto.ApprovalProcessRequest;
 import com.bizexpense.domain.approval.dto.ApprovalResponse;
 import com.bizexpense.domain.approval.dto.ApprovalSearchCondition;
@@ -20,6 +23,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+@Tag(name = "07. 결재", description = "결재함, 승인/반려")
 @RestController
 @RequestMapping("/api/approvals")
 @RequiredArgsConstructor
@@ -35,6 +39,7 @@ public class ApprovalController {
         return ApiResponse.ok(approvalService.search(loginUser, cond, pageable));
     }
 
+    @Audited(AuditAction.APPROVAL_APPROVE)
     @PostMapping("/{approvalId}/approve")
     public ApiResponse<ApprovalResponse> approve(@AuthenticationPrincipal LoginUser loginUser,
                                                  @PathVariable Long approvalId,
@@ -42,6 +47,7 @@ public class ApprovalController {
         return ApiResponse.ok(approvalService.approve(loginUser, approvalId, request == null ? null : request.comment()));
     }
 
+    @Audited(AuditAction.APPROVAL_REJECT)
     @PostMapping("/{approvalId}/reject")
     public ApiResponse<ApprovalResponse> reject(@AuthenticationPrincipal LoginUser loginUser,
                                                 @PathVariable Long approvalId,
