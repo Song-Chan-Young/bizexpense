@@ -44,4 +44,27 @@ public interface ExpenseRepository extends JpaRepository<Expense, Long>, JpaSpec
             order by sum(e.amount) desc
             """)
     List<CategoryAmount> sumByTripGroupByCategory(@Param("tripId") Long tripId);
+
+    /**
+     * 정산 대상 경비: 출장의 경비 중 아직 정산에 들어가지 않은 임시저장 경비,
+     * 그리고 (재신청이면) 해당 정산에서 반려된 경비.
+     */
+    @Query("""
+            select e from Expense e
+            join fetch e.paymentMethod
+            where e.trip.id = :tripId
+              and ((e.status = com.bizexpense.domain.expense.ExpenseStatus.DRAFT and e.settlementId is null)
+                or (e.status = com.bizexpense.domain.expense.ExpenseStatus.REJECTED and e.settlementId = :settlementId))
+            order by e.usedAt, e.id
+            """)
+    List<Expense> findSettleable(@Param("tripId") Long tripId, @Param("settlementId") Long settlementId);
+
+    @Query("""
+            select e from Expense e
+            join fetch e.paymentMethod
+            join fetch e.category
+            where e.settlementId = :settlementId
+            order by e.usedAt, e.id
+            """)
+    List<Expense> findBySettlementId(@Param("settlementId") Long settlementId);
 }

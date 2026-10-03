@@ -48,6 +48,14 @@ public enum ErrorCode {
     TRIP_NOT_EXPENSABLE(HttpStatus.BAD_REQUEST, "경비를 등록할 수 없는 출장입니다."),
     EXPENSE_DATE_OUT_OF_TRIP(HttpStatus.BAD_REQUEST, "사용일이 출장 기간을 벗어났습니다."),
 
+    // 정산
+    SETTLEMENT_NOT_FOUND(HttpStatus.NOT_FOUND, "정산을 찾을 수 없습니다."),
+    INVALID_SETTLEMENT_STATUS(HttpStatus.CONFLICT, "현재 정산 상태에서는 처리할 수 없습니다."),
+    TRIP_NOT_SETTLEABLE(HttpStatus.BAD_REQUEST, "완료된 출장만 정산을 신청할 수 있습니다."),
+    NO_EXPENSES_TO_SETTLE(HttpStatus.BAD_REQUEST, "정산할 경비가 없습니다."),
+    SETTLEMENT_IN_PROGRESS(HttpStatus.CONFLICT, "이 출장에 진행 중인 정산이 있습니다."),
+    CONCURRENT_MODIFICATION(HttpStatus.CONFLICT, "다른 요청이 먼저 처리되었습니다. 새로고침 후 다시 시도하세요."),
+
     // 결재
     APPROVAL_NOT_FOUND(HttpStatus.NOT_FOUND, "결재 건을 찾을 수 없습니다."),
     APPROVER_NOT_FOUND(HttpStatus.CONFLICT, "결재할 팀장(또는 관리자)이 없습니다."),
