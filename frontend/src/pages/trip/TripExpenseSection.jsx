@@ -115,6 +115,7 @@ export default function TripExpenseSection({ trip, reloadKey: outerKey, onChange
           onClose={close}
           onEdit={() => setModal({ mode: 'form', expense: modal.expense })}
           onDeleted={reloadAndClose}
+          onChanged={() => setReloadKey((k) => k + 1)}
         />
       )}
     </section>

@@ -8,7 +8,7 @@
 - JDK 21 필요. 기본 `java` 가 26 이면 `export JAVA_HOME=$(/usr/libexec/java_home -v 21)` 후 실행.
 - 백엔드: `./gradlew bootRun` (http://localhost:8080, 기본 `local` 프로필, H2 파일 DB `./.data/`)
 - 프론트: `cd frontend && npm run dev` (http://localhost:5173, `/api` 는 8080 으로 프록시)
-- 테스트: `./gradlew test` (현재 108개). 프론트: `npm run build && npm run lint`
+- 테스트: `./gradlew test` (현재 120개). 프론트: `npm run build && npm run lint`
 - 로컬 계정: admin / manager1 / user1 / user2 / manager2 / user3, 비밀번호 `pass1234`
 
 ## 구조
@@ -35,5 +35,5 @@
 
 ## 진행 상황 / 다음 작업
 
-- 완료: Phase 1~5, 7, 8 (기본 구조, 로그인/권한, 출장, 일정, 경비, 결재, 정산), 배포, 모바일 화면
-- 남음: Phase 6 영수증 첨부(경비 `proof` 필드는 준비됨), Phase 9 대시보드 통계(대시보드 카드는 아직 `–`), Phase 10 감사 로그·API 문서 등
+- 완료: Phase 1~8 (기본 구조, 로그인/권한, 출장, 일정, 경비, 영수증 첨부, 결재, 정산), 배포, 모바일 화면
+- 남음: Phase 9 대시보드 통계(대시보드 카드는 아직 `–`), Phase 10 감사 로그·API 문서 등

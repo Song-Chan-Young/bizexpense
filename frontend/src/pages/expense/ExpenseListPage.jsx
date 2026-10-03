@@ -192,6 +192,7 @@ export default function ExpenseListPage() {
           onClose={close}
           onEdit={() => setModal({ mode: 'form', expense: modal.expense })}
           onDeleted={reloadAndClose}
+          onChanged={() => setReloadKey((k) => k + 1)}
         />
       )}
     </>

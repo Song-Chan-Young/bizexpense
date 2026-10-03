@@ -7,6 +7,11 @@ spring:
   h2:
     console:
       enabled: false
+  # 영수증 첨부: 파일 1개 5MB (ExpenseFile.MAX_SIZE 와 맞춘다)
+  servlet:
+    multipart:
+      max-file-size: 5MB
+      max-request-size: 6MB
   jpa:
     open-in-view: false
     properties:

@@ -5,8 +5,10 @@ import Modal from '../../components/Modal'
 import StatusBadge from '../../components/StatusBadge'
 import { formatDate } from '../../utils/date'
 import { formatWon } from '../../utils/format'
+import ReceiptSection from './ReceiptSection'
 
-export default function ExpenseDetailModal({ expense, onClose, onEdit, onDeleted }) {
+/** onChanged: 영수증 첨부/삭제로 경비(증빙 여부)가 바뀌었을 때 목록을 다시 불러오도록 알린다 */
+export default function ExpenseDetailModal({ expense, onClose, onEdit, onDeleted, onChanged }) {
   const [confirming, setConfirming] = useState(false)
   const [error, setError] = useState('')
 
@@ -68,11 +70,10 @@ export default function ExpenseDetailModal({ expense, onClose, onEdit, onDeleted
         </dd>
         <dt>등록자</dt>
         <dd>{expense.userName}</dd>
-        <dt>증빙</dt>
-        <dd>{expense.proof ? '첨부됨' : <span className="muted">없음 (영수증 첨부는 다음 단계에서 지원)</span>}</dd>
         <dt>내용</dt>
         <dd className="pre">{expense.description || '-'}</dd>
       </dl>
+      <ReceiptSection expenseId={expense.expenseId} editable={expense.editable} onChanged={onChanged} />
       {error && <p className="form-error">{error}</p>}
     </Modal>
   )

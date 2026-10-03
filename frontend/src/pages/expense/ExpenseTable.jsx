@@ -31,7 +31,14 @@ export default function ExpenseTable({ expenses, showTrip, showOwner, totalAmoun
               {showOwner && <td className="nowrap">{e.userName}</td>}
               {showTrip && <td>{e.tripTitle}</td>}
               <td className="nowrap">{e.categoryName}</td>
-              <td>{e.storeName}</td>
+              <td>
+                {e.storeName}
+                {e.proof && (
+                  <span className="tag" title="영수증 첨부됨">
+                    영수증
+                  </span>
+                )}
+              </td>
               <td className="nowrap">
                 {e.paymentMethodName}
                 {e.corporate && <span className="tag">법인</span>}
