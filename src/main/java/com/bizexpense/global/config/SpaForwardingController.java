@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 public class SpaForwardingController {
 
     @GetMapping({
-            "/login", "/schedules", "/expenses", "/approvals", "/admin",
+            "/login", "/schedules", "/expenses", "/approvals", "/admin", "/admin/audit-logs",
             "/trips", "/trips/new", "/trips/{id:\\d+}", "/trips/{id:\\d+}/edit",
             "/settlements", "/settlements/{id:\\d+}"
     })

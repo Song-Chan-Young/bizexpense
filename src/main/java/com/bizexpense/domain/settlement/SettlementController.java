@@ -1,5 +1,8 @@
 package com.bizexpense.domain.settlement;
 
+import io.swagger.v3.oas.annotations.tags.Tag;
+import com.bizexpense.domain.audit.AuditAction;
+import com.bizexpense.domain.audit.Audited;
 import com.bizexpense.domain.settlement.dto.SettlementDetailResponse;
 import com.bizexpense.domain.settlement.dto.SettlementResponse;
 import com.bizexpense.domain.settlement.dto.SettlementSearchCondition;
@@ -20,6 +23,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
+@Tag(name = "08. 정산", description = "정산 신청·재신청·지급 처리")
 @RestController
 @RequiredArgsConstructor
 public class SettlementController {
@@ -48,6 +52,7 @@ public class SettlementController {
     }
 
     /** 정산 신청 */
+    @Audited(AuditAction.SETTLEMENT_REQUEST)
     @PostMapping("/api/trips/{tripId}/settlement")
     @ResponseStatus(HttpStatus.CREATED)
     public ApiResponse<SettlementResponse> request(@AuthenticationPrincipal LoginUser loginUser,
@@ -56,6 +61,7 @@ public class SettlementController {
     }
 
     /** 반려 후 재신청 */
+    @Audited(AuditAction.SETTLEMENT_RESUBMIT)
     @PostMapping("/api/settlements/{settlementId}/request")
     public ApiResponse<SettlementResponse> resubmit(@AuthenticationPrincipal LoginUser loginUser,
                                                     @PathVariable Long settlementId) {
@@ -63,6 +69,7 @@ public class SettlementController {
     }
 
     /** 지급 완료 처리 (관리자) */
+    @Audited(AuditAction.SETTLEMENT_COMPLETE)
     @PostMapping("/api/settlements/{settlementId}/complete")
     public ApiResponse<SettlementResponse> complete(@AuthenticationPrincipal LoginUser loginUser,
                                                     @PathVariable Long settlementId) {

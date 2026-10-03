@@ -1,5 +1,8 @@
 package com.bizexpense.domain.expense;
 
+import io.swagger.v3.oas.annotations.tags.Tag;
+import com.bizexpense.domain.audit.AuditAction;
+import com.bizexpense.domain.audit.Audited;
 import com.bizexpense.domain.expense.dto.ExpenseRequest;
 import com.bizexpense.domain.expense.dto.ExpenseResponse;
 import com.bizexpense.domain.expense.dto.ExpenseSearchCondition;
@@ -24,6 +27,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
+@Tag(name = "05. 경비", description = "경비 등록·검색·합계, 출장별 요약")
 @RestController
 @RequiredArgsConstructor
 public class ExpenseController {
@@ -44,6 +48,7 @@ public class ExpenseController {
         return ApiResponse.ok(expenseService.get(loginUser, expenseId));
     }
 
+    @Audited(AuditAction.EXPENSE_CREATE)
     @PostMapping("/api/expenses")
     @ResponseStatus(HttpStatus.CREATED)
     public ApiResponse<ExpenseResponse> create(@AuthenticationPrincipal LoginUser loginUser,
@@ -51,6 +56,7 @@ public class ExpenseController {
         return ApiResponse.ok(expenseService.create(loginUser, request));
     }
 
+    @Audited(AuditAction.EXPENSE_UPDATE)
     @PutMapping("/api/expenses/{expenseId}")
     public ApiResponse<ExpenseResponse> update(@AuthenticationPrincipal LoginUser loginUser,
                                                @PathVariable Long expenseId,
@@ -58,6 +64,7 @@ public class ExpenseController {
         return ApiResponse.ok(expenseService.update(loginUser, expenseId, request));
     }
 
+    @Audited(AuditAction.EXPENSE_DELETE)
     @DeleteMapping("/api/expenses/{expenseId}")
     public ApiResponse<Void> delete(@AuthenticationPrincipal LoginUser loginUser, @PathVariable Long expenseId) {
         expenseService.delete(loginUser, expenseId);

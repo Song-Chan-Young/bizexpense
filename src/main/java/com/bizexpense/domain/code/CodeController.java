@@ -1,5 +1,8 @@
 package com.bizexpense.domain.code;
 
+import io.swagger.v3.oas.annotations.tags.Tag;
+import com.bizexpense.domain.audit.AuditAction;
+import com.bizexpense.domain.audit.Audited;
 import com.bizexpense.domain.code.dto.CodeDtos.CategoryRequest;
 import com.bizexpense.domain.code.dto.CodeDtos.CategoryResponse;
 import com.bizexpense.domain.code.dto.CodeDtos.PaymentMethodRequest;
@@ -23,6 +26,7 @@ import org.springframework.web.bind.annotation.RestController;
 /**
  * 조회(/api/codes/**)는 로그인 사용자 모두, 변경(/api/admin/**)은 관리자만 (SecurityConfig).
  */
+@Tag(name = "09. 기준 코드", description = "비용 항목 / 결제 수단 (관리자 변경)")
 @RestController
 @RequiredArgsConstructor
 public class CodeController {
@@ -42,24 +46,28 @@ public class CodeController {
         return ApiResponse.ok(codeService.paymentMethods(all && loginUser.isAdmin()));
     }
 
+    @Audited(AuditAction.CATEGORY_CREATE)
     @PostMapping("/api/admin/expense-categories")
     @ResponseStatus(HttpStatus.CREATED)
     public ApiResponse<CategoryResponse> createCategory(@Valid @RequestBody CategoryRequest request) {
         return ApiResponse.ok(codeService.createCategory(request));
     }
 
+    @Audited(AuditAction.CATEGORY_UPDATE)
     @PutMapping("/api/admin/expense-categories/{id}")
     public ApiResponse<CategoryResponse> updateCategory(@PathVariable Long id,
                                                         @Valid @RequestBody CategoryRequest request) {
         return ApiResponse.ok(codeService.updateCategory(id, request));
     }
 
+    @Audited(AuditAction.PAYMENT_METHOD_CREATE)
     @PostMapping("/api/admin/payment-methods")
     @ResponseStatus(HttpStatus.CREATED)
     public ApiResponse<PaymentMethodResponse> createPaymentMethod(@Valid @RequestBody PaymentMethodRequest request) {
         return ApiResponse.ok(codeService.createPaymentMethod(request));
     }
 
+    @Audited(AuditAction.PAYMENT_METHOD_UPDATE)
     @PutMapping("/api/admin/payment-methods/{id}")
     public ApiResponse<PaymentMethodResponse> updatePaymentMethod(@PathVariable Long id,
                                                                   @Valid @RequestBody PaymentMethodRequest request) {

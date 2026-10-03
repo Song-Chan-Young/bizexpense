@@ -5,6 +5,7 @@ import Layout from './components/Layout'
 import DashboardPage from './pages/DashboardPage'
 import LoginPage from './pages/LoginPage'
 import AdminCodePage from './pages/admin/AdminCodePage'
+import AuditLogPage from './pages/admin/AuditLogPage'
 import ApprovalPage from './pages/approval/ApprovalPage'
 import ExpenseListPage from './pages/expense/ExpenseListPage'
 import SchedulePage from './pages/schedule/SchedulePage'
@@ -41,6 +42,14 @@ export default function App() {
               element={
                 <RequireAuth roles={['ADMIN']}>
                   <AdminCodePage />
+                </RequireAuth>
+              }
+            />
+            <Route
+              path="admin/audit-logs"
+              element={
+                <RequireAuth roles={['ADMIN']}>
+                  <AuditLogPage />
                 </RequireAuth>
               }
             />
