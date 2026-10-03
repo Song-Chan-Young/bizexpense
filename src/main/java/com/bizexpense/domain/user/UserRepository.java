@@ -11,4 +11,10 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
     @EntityGraph(attributePaths = "department")
     Optional<User> findWithDepartmentById(Long id);
+
+    /** 부서 결재자(팀장) 찾기 */
+    Optional<User> findFirstByDepartmentIdAndRoleAndActiveTrueOrderByIdAsc(Long departmentId, Role role);
+
+    /** 팀장/관리자 본인 신청 건의 결재자(다른 관리자) 찾기 */
+    Optional<User> findFirstByRoleAndActiveTrueAndIdNotOrderByIdAsc(Role role, Long excludeUserId);
 }

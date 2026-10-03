@@ -3,6 +3,7 @@ package com.bizexpense.domain.schedule;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
+import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
@@ -14,9 +15,14 @@ public interface ScheduleRepository extends JpaRepository<Schedule, Long>, JpaSp
             select s from Schedule s
             join fetch s.user u
             left join fetch u.department
+            left join fetch s.trip
             where s.id = :id
             """)
     Optional<Schedule> findDetailById(@Param("id") Long id);
+
+    /** 출장에 연결된 일정 (시간순) */
+    @EntityGraph(attributePaths = "user")
+    List<Schedule> findByTripIdOrderByStartAtAsc(Long tripId);
 
     /**
      * 캘린더 조회: [from, to) 기간과 겹치는 일정. userId / departmentId 가 null 이면 해당 조건을 쓰지 않는다.
@@ -24,6 +30,7 @@ public interface ScheduleRepository extends JpaRepository<Schedule, Long>, JpaSp
     @Query("""
             select s from Schedule s
             join fetch s.user u
+            left join fetch s.trip
             where s.startAt < :to
               and s.endAt > :from
               and (:userId is null or u.id = :userId)

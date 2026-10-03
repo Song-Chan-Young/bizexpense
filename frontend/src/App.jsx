@@ -4,7 +4,11 @@ import RequireAuth from './auth/RequireAuth'
 import Layout from './components/Layout'
 import DashboardPage from './pages/DashboardPage'
 import LoginPage from './pages/LoginPage'
+import ApprovalPage from './pages/approval/ApprovalPage'
 import SchedulePage from './pages/schedule/SchedulePage'
+import TripDetailPage from './pages/trip/TripDetailPage'
+import TripFormPage from './pages/trip/TripFormPage'
+import TripListPage from './pages/trip/TripListPage'
 
 export default function App() {
   return (
@@ -21,6 +25,18 @@ export default function App() {
           >
             <Route index element={<DashboardPage />} />
             <Route path="schedules" element={<SchedulePage />} />
+            <Route path="trips" element={<TripListPage />} />
+            <Route path="trips/new" element={<TripFormPage />} />
+            <Route path="trips/:id" element={<TripDetailPage />} />
+            <Route path="trips/:id/edit" element={<TripFormPage />} />
+            <Route
+              path="approvals"
+              element={
+                <RequireAuth roles={['MANAGER', 'ADMIN']}>
+                  <ApprovalPage />
+                </RequireAuth>
+              }
+            />
           </Route>
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>

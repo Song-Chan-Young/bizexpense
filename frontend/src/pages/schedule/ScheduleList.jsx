@@ -14,14 +14,20 @@ export default function ScheduleList({ reloadKey, onRowClick }) {
 
   useEffect(() => {
     // 빈 값은 보내지 않는다 (서버에서 조건 없음으로 처리)
+    let ignore = false
     const params = Object.fromEntries(Object.entries(query).filter(([, v]) => v !== ''))
     scheduleApi
       .search({ ...params, size: 10 })
       .then((data) => {
+        if (ignore) return
         setResult(data)
         setError('')
       })
-      .catch((err) => setError(err.message))
+      .catch((err) => !ignore && setError(err.message))
+    // 검색 조건을 빠르게 바꿀 때 늦게 도착한 이전 응답은 버린다
+    return () => {
+      ignore = true
+    }
   }, [query, reloadKey])
 
   const set = (key) => (e) => setFilter((f) => ({ ...f, [key]: e.target.value }))

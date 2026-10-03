@@ -10,6 +10,7 @@ import java.time.LocalDateTime;
 /**
  * 일정 등록/수정 요청.
  *
+ * @param tripId       연결할 출장 (선택). null 이면 연결하지 않는다(수정 시에는 연결 해제).
  * @param status       수정 시에만 사용. 등록 시에는 무시하고 PLANNED 로 시작한다.
  * @param allowOverlap 시간대가 겹치는 일정이 있어도 저장할지 여부.
  *                     false 면 겹칠 때 409 SCHEDULE_CONFLICT 로 응답해 사용자에게 경고한다.
@@ -21,6 +22,7 @@ public record ScheduleRequest(
         @NotNull(message = "시작 일시를 입력하세요.") LocalDateTime startAt,
         @NotNull(message = "종료 일시를 입력하세요.") LocalDateTime endAt,
         @Size(max = 200) String location,
+        Long tripId,
         ScheduleStatus status,
         Boolean allowOverlap) {
 

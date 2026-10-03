@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { Link } from 'react-router-dom'
 import { scheduleApi, typeColor } from '../../api/schedules'
 import Modal from '../../components/Modal'
 import { formatRange } from '../../utils/date'
@@ -54,6 +55,16 @@ export default function ScheduleDetailModal({ schedule, onClose, onEdit, onDelet
         <dd>{formatRange(schedule.startAt, schedule.endAt)}</dd>
         <dt>장소</dt>
         <dd>{schedule.location || '-'}</dd>
+        {schedule.tripId && (
+          <>
+            <dt>출장</dt>
+            <dd>
+              <Link to={`/trips/${schedule.tripId}`} className="link" onClick={onClose}>
+                {schedule.tripTitle}
+              </Link>
+            </dd>
+          </>
+        )}
         <dt>등록자</dt>
         <dd>{schedule.userName}</dd>
         <dt>내용</dt>

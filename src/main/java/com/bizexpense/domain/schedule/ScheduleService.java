@@ -1,10 +1,12 @@
 package com.bizexpense.domain.schedule;
 
-import com.bizexpense.domain.schedule.dto.CalendarScope;
+import com.bizexpense.global.common.ViewScope;
 import com.bizexpense.domain.schedule.dto.ScheduleConflictResponse;
 import com.bizexpense.domain.schedule.dto.ScheduleRequest;
 import com.bizexpense.domain.schedule.dto.ScheduleResponse;
 import com.bizexpense.domain.schedule.dto.ScheduleSearchCondition;
+import com.bizexpense.domain.trip.Trip;
+import com.bizexpense.domain.trip.TripRepository;
 import com.bizexpense.domain.user.User;
 import com.bizexpense.domain.user.UserRepository;
 import com.bizexpense.global.common.PageResponse;
@@ -31,6 +33,7 @@ public class ScheduleService {
 
     private final ScheduleRepository scheduleRepository;
     private final UserRepository userRepository;
+    private final TripRepository tripRepository;
 
     public PageResponse<ScheduleResponse> search(LoginUser loginUser, ScheduleSearchCondition cond, Pageable pageable) {
         return PageResponse.of(
@@ -39,28 +42,15 @@ public class ScheduleService {
     }
 
     /** 캘린더 조회. from 포함, to 미포함 날짜 범위. */
-    public List<ScheduleResponse> calendar(LoginUser loginUser, LocalDate from, LocalDate to, CalendarScope scope) {
+    public List<ScheduleResponse> calendar(LoginUser loginUser, LocalDate from, LocalDate to, ViewScope scope) {
         if (from == null || to == null || !to.isAfter(from) || from.plusDays(MAX_CALENDAR_DAYS).isBefore(to)) {
             throw new BusinessException(ErrorCode.INVALID_INPUT,
                     "조회 기간이 올바르지 않습니다. (최대 " + MAX_CALENDAR_DAYS + "일)");
         }
 
-        Long userId = null;
-        Long departmentId = null;
-        switch (scope) {
-            case ME -> userId = loginUser.userId();
-            case TEAM -> {
-                if (!loginUser.isManager() && !loginUser.isAdmin()) {
-                    throw new BusinessException(ErrorCode.ACCESS_DENIED);
-                }
-                departmentId = loginUser.departmentId();
-            }
-            case ALL -> {
-                if (!loginUser.isAdmin()) {
-                    throw new BusinessException(ErrorCode.ACCESS_DENIED);
-                }
-            }
-        }
+        scope.checkAllowed(loginUser);
+        Long userId = scope == ViewScope.ME ? loginUser.userId() : null;
+        Long departmentId = scope == ViewScope.TEAM ? loginUser.departmentId() : null;
 
         return scheduleRepository.findForCalendar(from.atStartOfDay(), to.atStartOfDay(), userId, departmentId)
                 .stream()
@@ -95,6 +85,7 @@ public class ScheduleService {
                 .endAt(request.endAt())
                 .location(request.location())
                 .build();
+        schedule.linkTrip(resolveTrip(request.tripId(), null));
 
         checkConflict(loginUser.userId(), request, null);
         return ScheduleResponse.of(scheduleRepository.save(schedule), loginUser.userId());
@@ -108,6 +99,7 @@ public class ScheduleService {
         ScheduleStatus status = request.status() != null ? request.status() : schedule.getStatus();
         schedule.update(request.type(), request.title(), request.content(),
                 request.startAt(), request.endAt(), request.location(), status);
+        schedule.linkTrip(resolveTrip(request.tripId(), schedule));
 
         // 취소로 바꾸는 경우에는 시간을 차지하지 않으므로 충돌 검사를 하지 않는다.
         if (status != ScheduleStatus.CANCELLED) {
@@ -121,6 +113,25 @@ public class ScheduleService {
         Schedule schedule = findDetail(scheduleId);
         checkOwner(schedule, loginUser);
         scheduleRepository.delete(schedule);
+    }
+
+    /**
+     * 연결할 출장 조회. 새로 연결할 때는 출장이 일정을 받을 수 있는 상태(완료/취소 아님)여야 한다.
+     * 이미 연결된 출장을 그대로 두는 수정은 상태와 관계없이 허용한다 (완료된 출장 일정의 상태 변경 등).
+     */
+    private Trip resolveTrip(Long tripId, Schedule current) {
+        if (tripId == null) {
+            return null;
+        }
+        Trip trip = tripRepository.findById(tripId)
+                .orElseThrow(() -> new BusinessException(ErrorCode.TRIP_NOT_FOUND));
+        boolean alreadyLinked = current != null && current.getTrip() != null
+                && current.getTrip().getId().equals(tripId);
+        if (!alreadyLinked && !trip.getStatus().isSchedulable()) {
+            throw new BusinessException(ErrorCode.TRIP_NOT_LINKABLE,
+                    "'" + trip.getStatus().getLabel() + "' 상태의 출장에는 일정을 연결할 수 없습니다.");
+        }
+        return trip;
     }
 
     private Schedule findDetail(Long scheduleId) {

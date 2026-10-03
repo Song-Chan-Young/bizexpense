@@ -1,6 +1,6 @@
 package com.bizexpense.domain.schedule;
 
-import com.bizexpense.domain.schedule.dto.CalendarScope;
+import com.bizexpense.global.common.ViewScope;
 import com.bizexpense.domain.schedule.dto.ScheduleConflictResponse;
 import com.bizexpense.domain.schedule.dto.ScheduleRequest;
 import com.bizexpense.domain.schedule.dto.ScheduleResponse;
@@ -53,7 +53,7 @@ public class ScheduleController {
             @AuthenticationPrincipal LoginUser loginUser,
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate from,
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate to,
-            @RequestParam(defaultValue = "ME") CalendarScope scope) {
+            @RequestParam(defaultValue = "ME") ViewScope scope) {
         return ApiResponse.ok(scheduleService.calendar(loginUser, from, to, scope));
     }
 

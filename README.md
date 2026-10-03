@@ -36,6 +36,22 @@ H2 콘솔: http://localhost:8080/h2-console (JDBC URL `jdbc:h2:file:./.data/bize
 
 운영 프로필(`prod`)은 환경변수 `DB_URL`, `DB_USERNAME`, `DB_PASSWORD`, `JWT_SECRET`(Base64, 256bit 이상)을 사용한다.
 
+## 출장 상태 흐름
+
+```text
+DRAFT(임시저장) ─신청─▶ REQUESTED(신청) ─승인─▶ APPROVED(승인) ─시작─▶ IN_PROGRESS(진행중) ─완료─▶ COMPLETED(완료)
+     ▲                      │
+     │                    반려 (사유 필수)
+     │                      ▼
+     └──── 수정 후 재신청 ── REJECTED(반려)
+
+취소: DRAFT / REQUESTED / APPROVED 에서 가능 (대기 중 결재 건, 연결된 일정도 함께 취소)
+삭제: DRAFT 만 가능 (연결된 일정은 남기고 연결만 해제)
+```
+
+결재자: 일반 직원 → 같은 부서 팀장(없으면 관리자), 팀장·관리자 → 다른 관리자.
+결재 건은 신청할 때마다 새로 생기므로 반려 → 재신청 이력이 모두 남는다.
+
 ## 테스트
 
 ```bash
@@ -53,11 +69,11 @@ H2 콘솔: http://localhost:8080/h2-console (JDBC URL `jdbc:h2:file:./.data/bize
 
 - [x] Phase 1 - 기본 구조 (공통 응답, 예외 처리, 로그, 프로필 분리)
 - [x] Phase 2 - 로그인 / 권한 (JWT, ROLE_USER / ROLE_MANAGER / ROLE_ADMIN)
-- [ ] Phase 3 - 출장
-- [x] Phase 4 - 일정 (CRUD, 월간/주간 캘린더, 목록 검색·페이징, 시간대 충돌 검사, 팀 일정 조회) — 출장 연결은 Phase 3 이후
+- [x] Phase 3 - 출장 (CRUD, 상태 전이, 검색·페이징, 일정 연결) + 출장 결재(승인/반려/재신청)
+- [x] Phase 4 - 일정 (CRUD, 월간/주간 캘린더, 목록 검색·페이징, 시간대 충돌 검사, 팀 일정 조회, 출장 연결)
 - [ ] Phase 5 - 경비
 - [ ] Phase 6 - 파일
-- [ ] Phase 7 - 결재
+- [ ] Phase 7 - 결재 (공통 결재 구조와 출장 결재는 완료, 정산 결재 연결 예정)
 - [ ] Phase 8 - 정산
 - [ ] Phase 9 - 대시보드
 - [ ] Phase 10 - 완성도
