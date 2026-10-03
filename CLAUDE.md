@@ -8,12 +8,12 @@
 - JDK 21 필요. 기본 `java` 가 26 이면 `export JAVA_HOME=$(/usr/libexec/java_home -v 21)` 후 실행.
 - 백엔드: `./gradlew bootRun` (http://localhost:8080, 기본 `local` 프로필, H2 파일 DB `./.data/`)
 - 프론트: `cd frontend && npm run dev` (http://localhost:5173, `/api` 는 8080 으로 프록시)
-- 테스트: `./gradlew test` (현재 125개). 프론트: `npm run build && npm run lint`
+- 테스트: `./gradlew test` (현재 132개). 프론트: `npm run build && npm run lint`
 - 로컬 계정: admin / manager1 / user1 / user2 / manager2 / user3, 비밀번호 `pass1234`
 
 ## 구조
 
-- `src/main/java/com/bizexpense/domain/<도메인>` — auth, user, department, schedule, trip, expense(영수증 파일 포함), code(비용 항목·결제 수단), approval, settlement, dashboard(읽기 전용 집계)
+- `src/main/java/com/bizexpense/domain/<도메인>` — auth, user, department, schedule, trip, expense(영수증 파일 포함), code(비용 항목·결제 수단), approval, settlement, dashboard(읽기 전용 집계), audit(감사 로그)
 - `src/main/java/com/bizexpense/global` — 공통 응답(`ApiResponse`), `ErrorCode`/`BusinessException`/전역 예외 처리, JWT 보안, 설정, 데모 데이터
 - `frontend/src/pages/<화면>`, `frontend/src/api/<도메인>.js`, `frontend/src/components` (공통)
 
@@ -23,6 +23,7 @@
 - 접근 권한: 조회는 본인·같은 부서 팀장·관리자, 변경은 본인만 → `AccessPolicy` 사용. 목록 범위는 `ViewScope`(ME/TEAM/ALL).
 - 결재는 공통 `Approval`(대상 종류 + 대상 ID). 대상별 결과 반영은 `ApprovalHandler` 구현체. 처리기는 순환 참조를 피하려고 서비스 대신 저장소를 직접 쓴다.
 - 검색은 `Specification`, 목록 응답은 `PageResponse`.
+- 변경 API(POST/PUT/DELETE)를 추가하면 `@Audited(AuditAction.XXX)` 를 붙이고 `AuditAction` 에 작업을 추가한다. 새 컨트롤러에는 Swagger `@Tag` 를 붙인다.
 - 프론트 비동기 조회는 `ignore` 플래그로 늦게 온 응답을 버린다. 화면 주소를 추가하면 `SpaForwardingController` 에도 추가한다.
 - 주석·커밋 메시지는 한국어. 커밋 메시지는 `feat:` / `fix:` 등 접두어.
 
@@ -35,6 +36,6 @@
 
 ## 진행 상황 / 다음 작업
 
-- 완료: Phase 1~9 (기본 구조, 로그인/권한, 출장, 일정, 경비, 영수증 첨부, 결재, 정산, 대시보드 통계), 배포, 모바일 화면
+- 완료: Phase 1~10 (기본 구조, 로그인/권한, 출장, 일정, 경비, 영수증 첨부, 결재, 정산, 대시보드 통계, 감사 로그·API 문서), 배포, 모바일 화면
 - 대시보드는 일정(이번 주)이 맨 위, 그 아래 통계. 폰에서도 일정 화면은 월간 달력으로 시작한다.
-- 남음: Phase 10 감사 로그·API 문서 등
+- 남은 Phase 없음. 이후는 개선 작업.

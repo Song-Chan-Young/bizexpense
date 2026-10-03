@@ -35,3 +35,11 @@ logging:
   level:
     root: INFO
     com.bizexpense: DEBUG
+
+# API 문서: 메서드 이름 대신 정렬된 태그/경로로 보여준다
+springdoc:
+  swagger-ui:
+    tags-sorter: alpha
+    operations-sorter: method
+    persist-authorization: true
+  default-produces-media-type: application/json

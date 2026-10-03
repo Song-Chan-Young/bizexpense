@@ -1,5 +1,8 @@
 package com.bizexpense.domain.expense;
 
+import io.swagger.v3.oas.annotations.tags.Tag;
+import com.bizexpense.domain.audit.AuditAction;
+import com.bizexpense.domain.audit.Audited;
 import com.bizexpense.domain.expense.dto.ExpenseFileResponse;
 import com.bizexpense.global.common.ApiResponse;
 import com.bizexpense.global.security.LoginUser;
@@ -23,6 +26,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
+@Tag(name = "06. 영수증", description = "경비 영수증 첨부·다운로드·삭제")
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/expenses/{expenseId}/files")
@@ -36,6 +40,7 @@ public class ExpenseFileController {
         return ApiResponse.ok(fileService.list(loginUser, expenseId));
     }
 
+    @Audited(AuditAction.FILE_UPLOAD)
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @ResponseStatus(HttpStatus.CREATED)
     public ApiResponse<ExpenseFileResponse> upload(@AuthenticationPrincipal LoginUser loginUser,
@@ -59,6 +64,7 @@ public class ExpenseFileController {
                 .body(file.getData());
     }
 
+    @Audited(AuditAction.FILE_DELETE)
     @DeleteMapping("/{fileId}")
     public ApiResponse<Void> delete(@AuthenticationPrincipal LoginUser loginUser,
                                     @PathVariable Long expenseId, @PathVariable Long fileId) {

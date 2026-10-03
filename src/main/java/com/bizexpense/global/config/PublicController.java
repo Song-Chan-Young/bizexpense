@@ -1,5 +1,7 @@
 package com.bizexpense.global.config;
 
+import io.swagger.v3.oas.annotations.security.SecurityRequirements;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import com.bizexpense.domain.user.User;
 import com.bizexpense.domain.user.UserRepository;
 import com.bizexpense.global.common.ApiResponse;
@@ -12,6 +14,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 /** 로그인 없이 접근하는 API (SecurityConfig 에서 /api/public/** 허용) */
+@SecurityRequirements // 인증 없이 호출
+@Tag(name = "00. 공개", description = "로그인 전 공개 정보")
 @RestController
 @RequestMapping("/api/public")
 @RequiredArgsConstructor
