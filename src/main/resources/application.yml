@@ -3,6 +3,10 @@ spring:
     name: bizexpense
   profiles:
     default: local
+  # H2 콘솔은 local 프로필에서만 켠다
+  h2:
+    console:
+      enabled: false
   jpa:
     open-in-view: false
     properties:
